@@ -290,7 +290,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		
 		####	
 		print("Trying to make the rficlean-gmhdr file ...\n")
-		if not make_rficlean_hdrfile(("%s/ttemp-gm.info"%(working_dir)), psrj,frequency,nchannels,bandwidth,samplingtime,sideband_):
+		if not make_rficlean_hdrfile(("%s/%s-ttemp-gm.info"%(working_dir,psrj)), psrj,frequency,nchannels,bandwidth,samplingtime,sideband_):
 			print ("Could not make the rficlean-gmhdr file!")
 			sys.exit(0)
 	####	
@@ -380,7 +380,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		# =================================================================================
 		# Now get a rfiCleaned filterbank file
 		cleanfil_file = out_file_root+'.rfiClean.fil' 
-		cmd = ("/home/ymaan/bin/rficlean -t 16384  -ft 6  -st 10  -rt 4  -white  -pcl  -psrf %f  -psrfbins 32  -o %s/%s  -ps %s.rfiClean.ps -gm %s/ttemp-gm.info  -gmtstamp %s/%s   %s/%s"%(f0psr, working_dir,cleanfil_file, out_file_root, working_dir, input_dir,timestamp_file,  input_dir,rawdatafile))
+		Nprocess = 16
+		#cmd = ("/home/ymaan/bin/rficlean -t 16384  -ft 6  -st 10  -rt 4  -white  -pcl  -psrf %f  -psrfbins 32  -o %s/%s  -ps %s.rfiClean.ps -gm %s/ttemp-gm.info  -gmtstamp %s/%s   %s/%s"%(f0psr, working_dir,cleanfil_file, out_file_root, working_dir,psrj, input_dir,timestamp_file,  input_dir,rawdatafile))
+		cmd = ('/home/ymaan/bin/crp_rficlean_gm.sh  %s/%s  /home/ymaan/inpta_pipeline/inpta_rficlean.flags  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file,  Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
 		print("cmd :: %s"%(cmd))
 		# run the command to generate rfiCleaned filterbank file...
 		if not test_run:
