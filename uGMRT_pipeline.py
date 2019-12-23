@@ -331,13 +331,15 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 			os.system(cmd)
 		gpt_file = rawdatafile+".gpt"
 		filterbank_in_file = gpt_file
+		filterbank_in_dir = working_dir
 	else:
 		filterbank_in_file = rawdatafile
+		filterbank_in_dir = input_dir
 
 	print("Creating filterbank file...")
 	out_file_root = psrj+"."+str(timestamp_mjd)+"."+str(frequency)
 	fil_file = out_file_root+'.fil' 
-	cmd = ("filterbank %s/%s -mjd %0.15f -rf %s -nch %s -bw %s -ts %s -df %s > %s/%s"%(working_dir,filterbank_in_file,timestamp_mjd,frequency,nchannels,bandwidth,samplingtime,sideband, working_dir, fil_file))
+	cmd = ("filterbank %s/%s -mjd %0.15f -rf %s -nch %s -bw %s -ts %s -df %s > %s/%s"%(filterbank_in_dir,filterbank_in_file,timestamp_mjd,frequency,nchannels,bandwidth,samplingtime,sideband, working_dir, fil_file))
 	print("cmd :: %s"%(cmd))
 	# Run filterbank here.
 	if not test_run:
