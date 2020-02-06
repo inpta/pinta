@@ -17,6 +17,7 @@ import numpy as np
 import parse
 import astropy.time as astrotime
 import getopt
+import time
 
 #= Parsing command line ============
 cmdargs = sys.argv[1:]
@@ -263,6 +264,9 @@ except ValueError:
 
 no_of_observations = len(pipeline_in_data)
 for i,pipeline_input in enumerate(pipeline_in_data):
+	
+	psr_start_time = time.time()	
+
 	psrj, rawdatafile, timestamp_file, frequency, nbins, nchannels, bandwidth, samplingtime, sideband_, pol_opt, integ_durn = pipeline_input
 	print("\nProcessing %s (%d of %d)..."%(psrj,i+1,no_of_observations))
 
@@ -312,6 +316,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		sys.exit(0)
 
 	if run_gptool:
+		gpt_start_time = time.time()
 		freq_int = choose_int_freq(float(frequency))
 		print("Creating %s/gptool.in for frequency %d..."%(working_dir,freq_int),end=' ')
 		try:
@@ -332,10 +337,13 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		gpt_file = rawdatafile+".gpt"
 		filterbank_in_file = gpt_file
 		filterbank_in_dir = working_dir
+		gpt_stop_time = time.time()
+		print("[TIME] Execution time for gptool = ",gpt_stop_time-gpt_start_time)
 	else:
 		filterbank_in_file = rawdatafile
 		filterbank_in_dir = input_dir
 
+	fil_start_time = time.time()
 	print("Creating filterbank file...")
 	out_file_root = psrj+"."+str(timestamp_mjd)+"."+str(frequency)
 	fil_file = out_file_root+'.fil' 
@@ -344,7 +352,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	# Run filterbank here.
 	if not test_run:
 		os.system(cmd)
-	
+	fil_stop_time = time.time()
+	print("[TIME] Execution time for filterbank = ",fil_stop_time-fil_start_time)	
+
 	if run_gptool and delete_tmp_files:
 		# Now delete gpt file
 		print('Removing %s/%s...'%(working_dir,gpt_file), end=' ')
@@ -357,6 +367,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		else:
 			print('Done.')	
 
+	dspsr_start_time = time.time()
 	print("Running dspsr...")	
 	# This command produces output in the "TIMER" format and "PSRFITS" format.
 	# For PSRFITS format use "-a PSRFITS" option. For some reason this fails with a segfault.
@@ -366,6 +377,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	# Run dspsr here
 	if not test_run:
 		os.system(cmd)
+	dspsr_stop_time = time.time()
+	print("[TIME] Execution time for dspsr = ", dspsr_stop_time-dspsr_start_time)
+	
 	# Now delete fil files
 	print("Removing %s/%s ..."%(working_dir, fil_file), end=' ')
 	if not test_run:
@@ -381,6 +395,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		# #################################################################################
 		# =================================================================================
 		# Now get a rfiCleaned filterbank file
+		rficlean_start_time = time.time()
 		cleanfil_file = out_file_root+'.rfiClean.fil' 
 		Nprocess = 16
 		#cmd = ("/home/ymaan/bin/rficlean -t 16384  -ft 6  -st 10  -rt 4  -white  -pcl  -psrf %f  -psrfbins 32  -o %s/%s  -ps %s.rfiClean.ps -gm %s/ttemp-gm.info  -gmtstamp %s/%s   %s/%s"%(f0psr, working_dir,cleanfil_file, out_file_root, working_dir,psrj, input_dir,timestamp_file,  input_dir,rawdatafile))
@@ -389,13 +404,19 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		# run the command to generate rfiCleaned filterbank file...
 		if not test_run:
 			os.system(cmd)
+		rficlean_stop_time = time.time()
+		print("[TIME] Execution time for rfiClean = ", rficlean_stop_time-rficlean_start_time)
+		
 		# Now generate the rfiClean-ed fits file using dspsr
+		dspsr_rc_start_time = time.time()
 		print("Running dspsr on rfiCleaned filterbankd file...")	
 		cmd = "dspsr -N %s -d %s -b %s -E %s -L %s   -A %s/%s -O %s/%s.rfiClean -e fits "%(psrj,pol_opt,nbins,parfile, integ_durn, working_dir, cleanfil_file, working_dir,out_file_root)
 		print("cmd :: %s"%cmd)
 		# Run dspsr here
 		if not test_run:
 			os.system(cmd)
+		dspsr_rc_stop_time = time.time()
+		print("[TIME] Execution time for dspsr (rfiClean) = ", dspsr_rc_stop_time-dspsr_rc_start_time)
 		# =================================================================================
 
 		if delete_tmp_files:
@@ -425,5 +446,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
         # #################################################################################
 
 	print("Processing %s (%d of %d) successful."%(psrj,i+1,no_of_observations))
-
+	
+	psr_stop_time = time.time()
+	print("[TIME] Total processing time = ", psr_stop_time-psr_start_time)
 
