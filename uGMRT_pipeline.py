@@ -27,7 +27,7 @@ opts = dict(opts)
 # Displaying help
 if opts.get("--help") is not None:
 	print("Usage : ")
-	print("InPTA_pipelineV3.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>")
+	print("uGMRT_pipeline.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>")
 	sys.exit(0)
 
 if len(args)<2:
