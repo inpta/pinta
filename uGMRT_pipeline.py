@@ -345,7 +345,8 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 
 	fil_start_time = time.time()
 	print("Creating filterbank file...")
-	out_file_root = psrj+"."+str(timestamp_mjd)+"."+str(frequency)
+	rawdata_size = os.stat(rawdatafile).st_size//(1024**2)
+	out_file_root = psrj+"."+str(timestamp_mjd)+"."+str(frequency)+"."+str(rawdata_size)+"M"
 	fil_file = out_file_root+'.fil' 
 	cmd = ("filterbank %s/%s -mjd %0.15f -rf %s -nch %s -bw %s -ts %s -df %s > %s/%s"%(filterbank_in_dir,filterbank_in_file,timestamp_mjd,frequency,nchannels,bandwidth,samplingtime,sideband, working_dir, fil_file))
 	print("cmd :: %s"%(cmd))
