@@ -382,15 +382,16 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	print("[TIME] Execution time for dspsr = ", dspsr_stop_time-dspsr_start_time)
 	
 	# Now delete fil files
-	print("Removing %s/%s ..."%(working_dir, fil_file), end=' ')
-	if not test_run:
-		try:
-			os.remove("%s/%s"%(working_dir, fil_file))
-			print("Done.")
-		except:
-			print("Could not delete fil file.")
-	else:
-		print('Done.')
+	if delete_tmp_files:
+		print("Removing %s/%s ..."%(working_dir, fil_file), end=' ')
+		if not test_run:
+			try:
+				os.remove("%s/%s"%(working_dir, fil_file))
+				print("Done.")
+			except:
+				print("Could not delete fil file.")
+		else:
+			print('Done.')
 
 	if run_rficlean:
 		# #################################################################################
