@@ -167,20 +167,27 @@ no_of_observations = len(pipeline_in_data)
 for i,pipeline_input in enumerate(pipeline_in_data):
 	
 	psr_start_time = time.time()	
-
+	
 	psrj, rawdatafile, timestamp_file, frequency, nbins, nchannels, bandwidth, samplingtime, sideband_, pol_opt, integ_durn = pipeline_input
 	print("\nProcessing %s (%d of %d)..."%(psrj,i+1,no_of_observations))
 
+	########################################################################################################
+
+	#= Checking observation files for permissions ==========================================================
 	for infile in [rawdatafile, timestamp_file]:
 		if not utils.check_input_file("%s/%s"%(input_dir, infile)):
 			sys.exit(0)
 	
-	# Checking the par file for permissions
+	########################################################################################################
+	
+	#= Checking the par file for permissions ===============================================================
 	parfile = "%s/%s.par"%(par_dir,psrj)
 	if not utils.check_input_file(parfile):
 		sys.exit(0)
 
-	#### for rficlean ...
+	########################################################################################################
+
+	#= Pulsar frequency and hdr file for rficlean ==========================================================
 	if run_rficlean:
 		
 		print("Trying to get the pulsar's spin frequency...\n")
@@ -193,13 +200,14 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 			print("could not fetch F0 from the parfile. Quitting...")
 			sys.exit(0)
 		
-		####	
 		print("Trying to make the rficlean-gmhdr file ...\n")
 		if not utils.make_rficlean_hdrfile(("%s/%s-ttemp-gm.info"%(working_dir,psrj)), psrj,frequency,nchannels,bandwidth,samplingtime,sideband_):
 			print ("Could not make the rficlean-gmhdr file!")
 			sys.exit(0)
-	####	
+	
+	#########################################################################################################
 
+	#= Timestamp file =======================================================================================
 	print("Processing timestamp file...", end=' ')
 	try:
 		timestamp_mjd = utils.process_timestamp(input_dir+'/'+timestamp_file)
@@ -207,7 +215,10 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		print("Could not process timestamp file. Quitting...")
 		sys.exit(0)
 	print("Done.   Timestamp = ", timestamp_mjd)
-	
+
+	#########################################################################################################
+
+	#= Sideband =============================================================================================	
 	if sideband_ == 'USB':
 		sideband = 'gmgwbf'
 	elif sideband_ == 'LSB':
@@ -216,6 +227,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		print("The given sideband is invalid. Quitting...")
 		sys.exit(0)
 
+	#########################################################################################################
+
+	#= Running gptool =======================================================================================
 	if run_gptool:
 		gpt_start_time = time.time()
 		freq_int = utils.choose_int_freq(float(frequency))
@@ -241,12 +255,13 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		gpt_stop_time = time.time()
 		print("[TIME] Execution time for gptool = ",gpt_stop_time-gpt_start_time)
 
-		
-		
 	else:
 		filterbank_in_file = rawdatafile
 		filterbank_in_dir = input_dir
 
+	#########################################################################################################
+
+	#= Running filterbank ===================================================================================
 	fil_start_time = time.time()
 	print("Creating filterbank file...")
 	#rawdata_size = os.stat(rawdatafile).st_size//(1024**2)
@@ -261,6 +276,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	fil_stop_time = time.time()
 	print("[TIME] Execution time for filterbank = ",fil_stop_time-fil_start_time)	
 
+	#########################################################################################################
+
+	#= Delete .gpt file =====================================================================================
 	if run_gptool and delete_tmp_files:
 		# Now delete gpt file
 		print('Removing %s/%s...'%(working_dir,gpt_file), end=' ')
@@ -272,7 +290,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 				print("Could not delete gpt file.")
 		else:
 			print('Done.')	
-
+	
+	#########################################################################################################
+	#= Running dspsr =========================================================================================
 	dspsr_start_time = time.time()
 	print("Running dspsr...")	
 	# This command produces output in the "TIMER" format and "PSRFITS" format.
@@ -286,7 +306,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	dspsr_stop_time = time.time()
 	print("[TIME] Execution time for dspsr = ", dspsr_stop_time-dspsr_start_time)
 	
-	# Now delete fil files
+	#########################################################################################################
+
+	#= Deleting .fil file ===================================================================================
 	if delete_tmp_files:
 		print("Removing %s/%s ..."%(working_dir, fil_file), end=' ')
 		if not test_run:
@@ -298,6 +320,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		else:
 			print('Done.')
 
+	#########################################################################################################
+	
+	#= Running rfiClean =====================================================================================
 	if run_rficlean:
 		# #################################################################################
 		# =================================================================================
@@ -338,7 +363,8 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 					print("Could not delete rfiCleaned filterbank-file.")
 			else:
 				print('Done.')
-
+	
+	#############################################################################################################
 
 	print("Creating summary plots...")
 	cmd = "pdmp -mc 64 -g %s/%s_summary.ps/cps %s.fits"%(working_dir, out_file_root, out_file_root)
@@ -360,8 +386,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	
 	print('Moving auxiliary output file to aux/ ...')
 	aux_dir_i = '{}/{}'.format(aux_dir, i)
-	if not os.access(aux_dir_i, os.F_OK):
-		os.mkdir(aux_dir_i)
+	if os.access(aux_dir_i, os.F_OK):
+		shutil.rmtree(aux_dir_i)
+	os.mkdir(aux_dir_i)
 	aux_files_wcards = ['b*.gpt','log.gpt', 'gptool.*', 'stats.gpt', 'J*.info', 'pdmp.*', 'rfiClean_ps']
 	aux_files = sum(map(glob.glob, aux_files_wcards), [])
 	for aux_file in aux_files:
