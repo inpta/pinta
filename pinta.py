@@ -86,161 +86,44 @@ else:
 
 #===================================
 
-def check_program(program):
-	print("Checking for %s..."%program, end=" ")
-	program_found = shutil.which(program) is not None
-	if program_found:
-		print("OK...")
-	else:
-		print("Not found... Quitting...")
-	return program_found
-
-def check_dir(folder):
-	print('Checking directory %s for permissions...'%folder, end=" ")
-	if not os.access(folder, os.F_OK):
-		print("%s does not exist... Quitting..."%folder)
-		return False
-	elif not os.path.isdir(folder):
-		print("%s is not a directory... Quitting..."%folder)
-		return False
-	elif not os.access(folder, os.R_OK):
-		print("%s not readable... Quitting..."%folder)
-		return False
-	elif not os.access(folder, os.W_OK):
-		print("%s not writable... Quitting..."%folder)
-		return False
-	else:
-		print("OK... ")
-		return True
-
-def check_read_dir(folder):
-	print('Checking directory %s for permissions...'%folder, end=" ")
-	if not os.access(folder, os.F_OK):
-		print("%s does not exist... Quitting..."%folder)
-		return False
-	elif not os.path.isdir(folder):
-		print("%s is not a directory... Quitting..."%folder)
-		return False
-	elif not os.access(folder, os.R_OK):
-		print("%s not readable... Quitting..."%folder)
-		return False
-	else:
-		print("OK... ")
-		return True
-
-def check_input_file(file_path):
-	print('Checking file %s for permissions...'%file_path, end=' ')
-	if not os.access(file_path, os.F_OK):
-		print("%s does not exist... Quitting..."%file_path)
-		return False
-	elif not os.path.isfile(file_path):
-		print("%s is not a file... Quitting..."%file_path)
-		return False
-	elif not os.access(file_path, os.R_OK):
-		print("%s not readable... Quitting..."%file_path)
-		return False
-	else:
-		print("OK... ")
-		return True
-
-def process_timestamp(timestamp_file_name):
-	timestamp_file = open(timestamp_file_name,'r')
-	timestamp_file_lines = timestamp_file.readlines()
-	timestr = parse.parse("IST Time: {}\n",timestamp_file_lines[1])[0]
-	datestr = parse.parse("Date: {}\n",timestamp_file_lines[2])[0]
-	timestamp_file.close()
-	day,month,year = parse.parse("{}:{}:{}",datestr)
-	datetime_IST = "%s-%s-%sT%s"%(year,month,day,timestr)
-
-	datetime = astrotime.Time(datetime_IST, format='isot', scale='utc')
-	IST_diff = astrotime.TimeDelta(3600*5.5, format='sec')	
-
-	return (datetime-IST_diff).mjd
-
-def fetch_f0(parfile_name):
-	f0 = -10.0
-	with open(parfile_name, 'r') as par_file:
-		for cnt, line in enumerate(par_file):
-			if f0<0.0:
-				try:
-					thestr = parse.parse("F0 {}\n",line)[0]
-					#print ("found in line %s \n "%line)
-					f0 = float(thestr.split()[0])
-					#print ("fetched F0 :  %f \n "%f0)
-				except:
-					pass #print ("F0 is not in this line. ")
-	print ("Pulsar spin-frequency found :  %f \n "%f0)
-	return f0
-
-def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,samplingtime,whichband):
-        print('Removing any previous rfiClean-gmhdr file %s   ...  '%(file_name), end=' ')
-        try:
-            os.remove("%s"%(file_name))
-            print("Done.")
-        except:
-            print("Could not delete the rfiClean-gmhdr file!")
-
-        with open(file_name, 'w') as hdrfile:
-            try:
-                hdrfile.write(str(float(samplingtime)*1000.0) + '\n')
-                hdrfile.write(str(frequency) + '\n')
-                if whichband == 'USB':
-                     hdrfile.write(str(-1.0*float(nchannels)*float(bandwidth)) + '\n')
-                elif whichband == 'LSB':
-                     hdrfile.write(str(float(nchannels)*float(bandwidth)) + '\n')
-                else:
-                     print("Unrecognizable sideband. Quitting...")
-                     sys.exit(0)
-                hdrfile.write(str(nchannels) + '\n')
-                hdrfile.write(psrj)
-                print ("The rfiClean-gmhdr file written out!")
-            except:
-                return False
-        return True
-
-def choose_int_freq(freq):
-	int_freqs = np.array((499,749,1459))
-	i = np.argmin(np.abs(int_freqs-freq))
-	return int_freqs[i]
-
 ##################################################################
 
 #par_dir = "/Data/bcj/INPTA/30june2018/gwbh7/parfilesinpta/"
 #gptool_in_dir = "/misc/home/asusobhanan/Work/gptool_files"
-"""
-if len(sys.argv)<3:
-	print("Input and working directories must be provided as command line arguments.")
-	sys.exit(0)
-elif len(sys.argv)>=3:
-	input_dir = sys.argv[1]
-	working_dir= sys.argv[2]
 
-test_run = len(sys.argv)>3 and sys.argv[3]=='test'
-if test_run:
-	print("Running in test mode. Commands will only be displayed and not executed.")
+#if len(sys.argv)<3:
+#	print("Input and working directories must be provided as command line arguments.")
+#	sys.exit(0)
+#elif len(sys.argv)>=3:
+#	input_dir = sys.argv[1]
+#	working_dir= sys.argv[2]
+
+#test_run = len(sys.argv)>3 and sys.argv[3]=='test'
+#if test_run:
+#	print("Running in test mode. Commands will only be displayed and not executed.")
 #test_run=False
-"""
+
 
 ##################################################################
 
 # Checking if all required programs are present
 for program in ['gptool','dspsr','filterbank','tempo2','pdmp']:
-	if not check_program(program):
+	if not utils.check_program(program):
 		sys.exit(0)
 
 ##################################################################
 
 # Checking directories for permissions
 print("The working directory is %s"%working_dir)
-if not check_dir(working_dir):
+if not utils.check_dir(working_dir):
 	sys.exit(0)
 
 print("The input directory is %s"%input_dir)
 for folder in [input_dir,par_dir]:
-	if not check_read_dir(folder):
+	if not utils.check_read_dir(folder):
 		sys.exit(0)
 if run_gptool:
-	if not check_read_dir(gptool_in_dir):
+	if not utils.check_read_dir(gptool_in_dir):
 		sys.exit(0)
 
 ##################################################################
@@ -249,13 +132,13 @@ if run_gptool:
 # Checking gptool.in files for permissions
 if run_gptool:
 	for freq in [499,749,1459]:
-		if not check_input_file("%s/gptool.in.%d"%(gptool_in_dir,freq)):
+		if not utils.check_input_file("%s/gptool.in.%d"%(gptool_in_dir,freq)):
 			sys.exit(0)
 
 ##################################################################
 
 # Checking and reading pipeline.in
-if not check_input_file("%s/pipeline.in"%(working_dir)):
+if not utils.check_input_file("%s/pipeline.in"%(working_dir)):
 	sys.exit(0)
 print("Reading %s/pipeline.in..."%(working_dir), end=' ')
 try:
@@ -283,12 +166,12 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	print("\nProcessing %s (%d of %d)..."%(psrj,i+1,no_of_observations))
 
 	for infile in [rawdatafile, timestamp_file]:
-		if not check_input_file("%s/%s"%(input_dir, infile)):
+		if not utils.check_input_file("%s/%s"%(input_dir, infile)):
 			sys.exit(0)
 	
 	# Checking the par file for permissions
 	parfile = "%s/%s.par"%(par_dir,psrj)
-	if not check_input_file(parfile):
+	if not utils.check_input_file(parfile):
 		sys.exit(0)
 
 	#### for rficlean ...
@@ -296,7 +179,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		
 		print("Trying to get the pulsar's spin frequency...\n")
 		try:
-			f0psr = fetch_f0(parfile)
+			f0psr = utils.fetch_f0(parfile)
 		except:
 			print("Could not fetch F0 from the parfile. Quitting...")
 			sys.exit(0)
@@ -306,14 +189,14 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		
 		####	
 		print("Trying to make the rficlean-gmhdr file ...\n")
-		if not make_rficlean_hdrfile(("%s/%s-ttemp-gm.info"%(working_dir,psrj)), psrj,frequency,nchannels,bandwidth,samplingtime,sideband_):
+		if not utils.make_rficlean_hdrfile(("%s/%s-ttemp-gm.info"%(working_dir,psrj)), psrj,frequency,nchannels,bandwidth,samplingtime,sideband_):
 			print ("Could not make the rficlean-gmhdr file!")
 			sys.exit(0)
 	####	
 
 	print("Processing timestamp file...", end=' ')
 	try:
-		timestamp_mjd = process_timestamp(input_dir+'/'+timestamp_file)
+		timestamp_mjd = utils.process_timestamp(input_dir+'/'+timestamp_file)
 	except Exception as e:
 		print("Could not process timestamp file. Quitting...")
 		sys.exit(0)
@@ -329,7 +212,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 
 	if run_gptool:
 		gpt_start_time = time.time()
-		freq_int = choose_int_freq(float(frequency))
+		freq_int = utils.choose_int_freq(float(frequency))
 		print("Creating %s/gptool.in for frequency %d..."%(working_dir,freq_int),end=' ')
 		try:
 			gptool_in_src = "%s/gptool.in.%d"%(gptool_in_dir,freq_int)
