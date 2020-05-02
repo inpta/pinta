@@ -20,8 +20,8 @@ import getopt
 import time
 
 def touch_file(fname):
-    with open(fname):
-	os.utime(fname, None)
+    with open(fname, 'w'):
+        os.utime(fname, None)
 
 #= Parsing command line ============
 cmdargs = sys.argv[1:]
