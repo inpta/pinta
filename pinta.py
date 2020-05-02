@@ -18,6 +18,7 @@ import parse
 import getopt
 import time
 import glob
+import yaml
 import pintautils as utils
 
 ################################################################################################################
@@ -25,7 +26,7 @@ import pintautils as utils
 #= Parsing command line ========================================================================================
 cmdargs = sys.argv[1:]
 
-opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "help", "test", "no-gptool", "no-rficlean", "nodel"])
+opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "help", "test", "no-gptool", "no-rficlean", "nodel", "rficconf"])
 opts = dict(opts)
 
 ################################################################################################################
@@ -67,18 +68,38 @@ if test_run:
 
 ################################################################################################################
 
-#= Pulsar ephemeris directory and gptool config directory ======================================================
+#= Reading config file =========================================================================================
+script_dir = os.path.dirname(os.path.realpath(__file__))
+config_file = '{}/{}'.format(script_dir, 'pinta.yaml')
+try:
+	print("Reading config from", config_file)
+	config = yaml.load(open(config_file), Loader=yaml.FullLoader)
+except:
+	print("Unable to read config file ", config_file)
+	sys.exit(0)
+
+################################################################################################################
+
+#= Pulsar ephemeris directory, gptool config directory and rfiClean config file ================================
 if opts.get("--pardir") is not None:
 	print("*.par directory provided in command line.")
 	par_dir = opts.get("--pardir")
 else:
-	par_dir = "/Data/bcj/INPTA/30june2018/gwbh7/parfilesinpta/"
+	#par_dir = "/Data/bcj/INPTA/30june2018/gwbh7/parfilesinpta/"
+	par_dir = config['pinta']['pardir']
 
 if opts.get("--gptdir") is not None:
 	print("gptool.in directory provided in command line.")
 	gptool_in_dir = opts.get("--gptdir")
 else:
-	gptool_in_dir = "/misc/home/asusobhanan/Work/gptool_files"
+	#gptool_in_dir = "/misc/home/asusobhanan/Work/gptool_files"
+	gptool_in_dir = config['pinta']['gptdir']
+
+if opts.get("--rficconf") is not None:
+	print("rfiClean configuration file profided in command line.")
+	rfic_conf_file = opts.get("--rficconf")
+else:
+	rfic_conf_file = config['pinta']["rficconf"]
 
 ################################################################################################################
 
@@ -332,7 +353,8 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		Nprocess = 16
 		# rfiClean execuable is in /home/ymaan/bin/ .
 		#cmd = ("rficlean -t 16384  -ft 6  -st 10  -rt 4  -white  -pcl  -psrf %f  -psrfbins 32  -o %s/%s  -ps %s.rfiClean.ps -gm %s/ttemp-gm.info  -gmtstamp %s/%s   %s/%s"%(f0psr, working_dir,cleanfil_file, out_file_root, working_dir,psrj, input_dir,timestamp_file,  input_dir,rawdatafile))
-		cmd = ('crp_rficlean_gm.sh  %s/%s  /home/ymaan/inpta_pipeline/inpta_rficlean.flags  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file,  Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
+		#cmd = ('crp_rficlean_gm.sh  %s/%s  /home/ymaan/inpta_pipeline/inpta_rficlean.flags  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file,  Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
+		cmd = ('crp_rficlean_gm.sh  %s/%s  %s  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file, rfic_conf_file, Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
 		print("cmd :: %s"%(cmd))
 		# run the command to generate rfiCleaned filterbank file...
 		if not test_run:
