@@ -18,10 +18,7 @@ import parse
 import astropy.time as astrotime
 import getopt
 import time
-
-def touch_file(fname):
-    with open(fname, 'w'):
-        os.utime(fname, None)
+import pintautils as utils
 
 #= Parsing command line ============
 cmdargs = sys.argv[1:]
@@ -50,7 +47,8 @@ if os.access(lockfile, os.F_OK):
 	sys.exit(0)
 else:
 	print("Creating lock file...")
-	touch_file(lockfile)
+	utils.touch_file(lockfile)
+
 
 test_run = opts.get("--test") is not None
 if test_run:
