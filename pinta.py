@@ -19,13 +19,17 @@ import astropy.time as astrotime
 import getopt
 import time
 
+def touch_file(fname):
+    with open(fname):
+	os.utime(fname, None)
+
 #= Parsing command line ============
 cmdargs = sys.argv[1:]
 
 opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "help", "test", "no-gptool", "no-rficlean", "nodel"])
 opts = dict(opts)
 
-# Displaying help
+#= Displaying help =================
 if opts.get("--help") is not None:
 	print("Usage : ")
 	print("uGMRT_pipeline.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>")
@@ -37,6 +41,16 @@ if len(args)<2:
 else:
 	input_dir = args[0]
 	working_dir= args[1]
+
+#= Testing Lock ===================
+lockfile = "{}/{}".format(working_dir, 'pinta.lock')
+if os.access(lockfile, os.F_OK):
+	print("Another instance of pinta seems to be running on this directory.")
+	print("*IMPORTANT* If you are /sure/ this is a mistake, please remove pinta.lock manualy and try again. DOING THIS MAY CORRUPT THE DATA.")
+	sys.exit(0)
+else:
+	print("Creating lock file...")
+	touch_file(lockfile)
 
 test_run = opts.get("--test") is not None
 if test_run:
@@ -453,3 +467,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	psr_stop_time = time.time()
 	print("[TIME] Total processing time = ", psr_stop_time-psr_start_time)
 
+
+print("Process finished.")
+print("Removing lock file...")
+os.remove(lockfile)
