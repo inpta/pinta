@@ -86,26 +86,6 @@ else:
 
 #===================================
 
-##################################################################
-
-#par_dir = "/Data/bcj/INPTA/30june2018/gwbh7/parfilesinpta/"
-#gptool_in_dir = "/misc/home/asusobhanan/Work/gptool_files"
-
-#if len(sys.argv)<3:
-#	print("Input and working directories must be provided as command line arguments.")
-#	sys.exit(0)
-#elif len(sys.argv)>=3:
-#	input_dir = sys.argv[1]
-#	working_dir= sys.argv[2]
-
-#test_run = len(sys.argv)>3 and sys.argv[3]=='test'
-#if test_run:
-#	print("Running in test mode. Commands will only be displayed and not executed.")
-#test_run=False
-
-
-##################################################################
-
 # Checking if all required programs are present
 for program in ['gptool','dspsr','filterbank','tempo2','pdmp']:
 	if not utils.check_program(program):
