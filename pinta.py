@@ -18,6 +18,7 @@ import parse
 import astropy.time as astrotime
 import getopt
 import time
+import glob
 import pintautils as utils
 
 #= Parsing command line ============
@@ -137,6 +138,13 @@ except ValueError:
 
 ##################################################################
 
+# Creating directory for auxilliary output files
+aux_dir = "{}/{}".format(working_dir, 'aux')
+if not os.access(aux_dir, os.F_OK):
+    os.mkdir(aux_dir)
+
+##################################################################
+
 no_of_observations = len(pipeline_in_data)
 for i,pipeline_input in enumerate(pipeline_in_data):
 	
@@ -214,6 +222,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		filterbank_in_dir = working_dir
 		gpt_stop_time = time.time()
 		print("[TIME] Execution time for gptool = ",gpt_stop_time-gpt_start_time)
+
+		
+		
 	else:
 		filterbank_in_file = rawdatafile
 		filterbank_in_dir = input_dir
@@ -276,8 +287,9 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		rficlean_start_time = time.time()
 		cleanfil_file = out_file_root+'.rfiClean.fil' 
 		Nprocess = 16
-		#cmd = ("/home/ymaan/bin/rficlean -t 16384  -ft 6  -st 10  -rt 4  -white  -pcl  -psrf %f  -psrfbins 32  -o %s/%s  -ps %s.rfiClean.ps -gm %s/ttemp-gm.info  -gmtstamp %s/%s   %s/%s"%(f0psr, working_dir,cleanfil_file, out_file_root, working_dir,psrj, input_dir,timestamp_file,  input_dir,rawdatafile))
-		cmd = ('/home/ymaan/bin/crp_rficlean_gm.sh  %s/%s  /home/ymaan/inpta_pipeline/inpta_rficlean.flags  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file,  Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
+		# rfiClean execuable is in /home/ymaan/bin/ .
+		#cmd = ("rficlean -t 16384  -ft 6  -st 10  -rt 4  -white  -pcl  -psrf %f  -psrfbins 32  -o %s/%s  -ps %s.rfiClean.ps -gm %s/ttemp-gm.info  -gmtstamp %s/%s   %s/%s"%(f0psr, working_dir,cleanfil_file, out_file_root, working_dir,psrj, input_dir,timestamp_file,  input_dir,rawdatafile))
+		cmd = ('crp_rficlean_gm.sh  %s/%s  /home/ymaan/inpta_pipeline/inpta_rficlean.flags  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file,  Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
 		print("cmd :: %s"%(cmd))
 		# run the command to generate rfiCleaned filterbank file...
 		if not test_run:
@@ -327,7 +339,15 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	
 	psr_stop_time = time.time()
 	print("[TIME] Total processing time = ", psr_stop_time-psr_start_time)
-
+	
+	print('Moving auxiliary output file to aux/ ...')
+	aux_dir_i = '{}/{}'.format(aux_dir, i)
+	if not os.access(aux_dir_i, os.F_OK):
+		os.mkdir(aux_dir_i)
+	aux_files_wcards = ['b*.gpt','log.gpt', 'gptool.*', 'stats.gpt', 'J*.info', 'pdmp.*', 'rfiClean_ps']
+	aux_files = sum(map(glob.glob, aux_files_wcards), [])
+	for aux_file in aux_files:
+		shutil.move(aux_file, aux_dir_i)
 
 print("Process finished.")
 print("Removing lock file...")
