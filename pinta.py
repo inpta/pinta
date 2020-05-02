@@ -15,24 +15,30 @@ import sys
 import os
 import numpy as np
 import parse
-import astropy.time as astrotime
 import getopt
 import time
 import glob
 import pintautils as utils
 
-#= Parsing command line ============
+################################################################################################################
+
+#= Parsing command line ========================================================================================
 cmdargs = sys.argv[1:]
 
 opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "help", "test", "no-gptool", "no-rficlean", "nodel"])
 opts = dict(opts)
 
-#= Displaying help =================
+################################################################################################################
+
+#= Displaying help =============================================================================================
 if opts.get("--help") is not None:
 	print("Usage : ")
 	print("uGMRT_pipeline.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>")
 	sys.exit(0)
 
+################################################################################################################
+
+#= Input and working directories ===============================================================================
 if len(args)<2:
 	print("Input and working directories must be provided as command line arguments.")
 	sys.exit(0)
@@ -40,7 +46,9 @@ else:
 	input_dir = args[0]
 	working_dir= args[1]
 
-#= Testing Lock ===================
+################################################################################################################
+
+#= Access Lock =================================================================================================
 lockfile = "{}/{}".format(working_dir, 'pinta.lock')
 if os.access(lockfile, os.F_OK):
 	print("Another instance of pinta seems to be running on this directory.")
@@ -50,11 +58,16 @@ else:
 	print("Creating lock file...")
 	utils.touch_file(lockfile)
 
+################################################################################################################
 
+#= Test Mode ===================================================================================================
 test_run = opts.get("--test") is not None
 if test_run:
 	print("Running in test mode. Commands will only be displayed and not executed.")
 
+################################################################################################################
+
+#= Pulsar ephemeris directory and gptool config directory ======================================================
 if opts.get("--pardir") is not None:
 	print("*.par directory provided in command line.")
 	par_dir = opts.get("--pardir")
@@ -67,6 +80,9 @@ if opts.get("--gptdir") is not None:
 else:
 	gptool_in_dir = "/misc/home/asusobhanan/Work/gptool_files"
 
+################################################################################################################
+
+#= Which branckes to run =======================================================================================
 run_gptool = opts.get("--no-gptool") is None
 if run_gptool:
 	print("Will run gptool.")
@@ -79,22 +95,25 @@ if run_rficlean:
 else:
 	print("Will not run rficlean.")
 
+################################################################################################################
+
+#= Whether to delete intermediate outputs ======================================================================
 delete_tmp_files = opts.get("--nodel") is None
 if delete_tmp_files:
 	print("Will remove intermediate products.")
 else:
 	print("Will not remove intermediate products.")
 
-#===================================
+################################################################################################################
 
-# Checking if all required programs are present
-for program in ['gptool','dspsr','filterbank','tempo2','pdmp']:
+#= Checking if all required programs are present ===============================================================
+for program in ['gptool','dspsr','filterbank','tempo2','pdmp','crp_rficlean_gm.sh']:
 	if not utils.check_program(program):
 		sys.exit(0)
 
-##################################################################
+################################################################################################################
 
-# Checking directories for permissions
+#= Checking directories for permissions ========================================================================
 print("The working directory is %s"%working_dir)
 if not utils.check_dir(working_dir):
 	sys.exit(0)
@@ -107,18 +126,17 @@ if run_gptool:
 	if not utils.check_read_dir(gptool_in_dir):
 		sys.exit(0)
 
-##################################################################
+################################################################################################################
 
-
-# Checking gptool.in files for permissions
+#= Checking gptool.in files for permissions ====================================================================
 if run_gptool:
 	for freq in [499,749,1459]:
 		if not utils.check_input_file("%s/gptool.in.%d"%(gptool_in_dir,freq)):
 			sys.exit(0)
 
-##################################################################
+################################################################################################################
 
-# Checking and reading pipeline.in
+#= Checking and reading pipeline.in ============================================================================
 if not utils.check_input_file("%s/pipeline.in"%(working_dir)):
 	sys.exit(0)
 print("Reading %s/pipeline.in..."%(working_dir), end=' ')
@@ -136,14 +154,14 @@ except ValueError:
 	print("Invalid format... Quitting...")
 	sys.exit(0)
 
-##################################################################
+################################################################################################################
 
-# Creating directory for auxilliary output files
+#= Creating directory for auxilliary output files ==============================================================
 aux_dir = "{}/{}".format(working_dir, 'aux')
 if not os.access(aux_dir, os.F_OK):
     os.mkdir(aux_dir)
 
-##################################################################
+################################################################################################################
 
 no_of_observations = len(pipeline_in_data)
 for i,pipeline_input in enumerate(pipeline_in_data):
