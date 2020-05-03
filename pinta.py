@@ -189,14 +189,17 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	
 	psr_start_time = time.time()	
 	
-	psrj, rawdatafile, timestamp_file, frequency, nbins, nchannels, bandwidth, samplingtime, sideband_, pol_opt, integ_durn = pipeline_input
+	psrj, rawdata_file, timestamp_file, frequency, nbins, nchannels, bandwidth, samplingtime, sideband_, pol_opt, integ_durn = pipeline_input
 	print("\nProcessing %s (%d of %d)..."%(psrj,i+1,no_of_observations))
+
+	rawdatafile = '{}/{}'.format(input_dir, rawdata_file)
+	timestampfile = '{}/{}'.format(input_dir, timestamp_file)	
 
 	########################################################################################################
 
 	#= Checking observation files for permissions ==========================================================
-	for infile in [rawdatafile, timestamp_file]:
-		if not utils.check_input_file("%s/%s"%(input_dir, infile)):
+	for infile in [rawdatafile, timestampfile]:
+		if not utils.check_input_file(infile):
 			sys.exit(0)
 	
 	########################################################################################################
@@ -231,7 +234,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	#= Timestamp file =======================================================================================
 	print("Processing timestamp file...", end=' ')
 	try:
-		timestamp_mjd = utils.process_timestamp(input_dir+'/'+timestamp_file)
+		timestamp_mjd = utils.process_timestamp(timestampfile)
 	except Exception as e:
 		print("Could not process timestamp file. Quitting...")
 		sys.exit(0)
@@ -265,20 +268,18 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		print("Done.")
 
 		print("Running gptool...")
-		cmd = "gptool -f %s/%s -nodedisp -o %s"%(input_dir,rawdatafile,  working_dir)
+		cmd = "gptool -f %s -nodedisp -o %s"%(rawdatafile,  working_dir)
 		print("cmd :: %s"%(cmd))
 		# Run gptool here.
 		if not test_run:
 			os.system(cmd)
-		gpt_file = rawdatafile+".gpt"
-		filterbank_in_file = gpt_file
-		filterbank_in_dir = working_dir
+		gptfile = '{}/{}.gpt'.format(working_dir, rawdata_file)
+		filterbank_in_file = gptfile
 		gpt_stop_time = time.time()
 		print("[TIME] Execution time for gptool = ",gpt_stop_time-gpt_start_time)
 
 	else:
 		filterbank_in_file = rawdatafile
-		filterbank_in_dir = input_dir
 
 	#########################################################################################################
 
@@ -286,10 +287,10 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	fil_start_time = time.time()
 	print("Creating filterbank file...")
 	#rawdata_size = os.stat(rawdatafile).st_size//(1024**2)
-	rawdata_size = os.stat("%s/%s"%(input_dir,rawdatafile)).st_size//(1024**2)
-	out_file_root = psrj+"."+str(timestamp_mjd)+"."+str(frequency)+"."+str(rawdata_size)+"M"
-	fil_file = out_file_root+'.fil' 
-	cmd = ("filterbank %s/%s -mjd %0.15f -rf %s -nch %s -bw %s -ts %s -df %s > %s/%s"%(filterbank_in_dir,filterbank_in_file,timestamp_mjd,frequency,nchannels,bandwidth,samplingtime,sideband, working_dir, fil_file))
+	rawdata_size = os.stat("%s"%(rawdatafile)).st_size//(1024**2)
+	out_file_root = "{}.{}.{}.{}M".format(psrj, str(timestamp_mjd), str(frequency), str(rawdata_size))
+	fil_file = "{}/{}.fil".format(working_dir, out_file_root) 
+	cmd = ("filterbank %s -mjd %0.15f -rf %s -nch %s -bw %s -ts %s -df %s > %s"%(filterbank_in_file,timestamp_mjd,frequency,nchannels,bandwidth,samplingtime,sideband,fil_file))
 	print("cmd :: %s"%(cmd))
 	# Run filterbank here.
 	if not test_run:
@@ -302,10 +303,10 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 	#= Delete .gpt file =====================================================================================
 	if run_gptool and delete_tmp_files:
 		# Now delete gpt file
-		print('Removing %s/%s...'%(working_dir,gpt_file), end=' ')
+		print('Removing %s ...'%(filterbank_in_file), end=' ')
 		if not test_run:
 			try:
-				os.remove("%s/%s"%(working_dir,gpt_file))
+				os.remove(gptfile)
 				print("Done.")
 			except:
 				print("Could not delete gpt file.")
@@ -313,13 +314,14 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 			print('Done.')	
 	
 	#########################################################################################################
+
 	#= Running dspsr =========================================================================================
 	dspsr_start_time = time.time()
 	print("Running dspsr...")	
 	# This command produces output in the "TIMER" format and "PSRFITS" format.
 	# For PSRFITS format use "-a PSRFITS" option. For some reason this fails with a segfault.
 	# So we are stuck with the TIMER format for the time being. Need to debug this.
-	cmd = "dspsr -N %s -d %s -b %s -E %s -L %s   -A %s/%s -O %s/%s -e fits "%(psrj,pol_opt,nbins,parfile, integ_durn, working_dir, fil_file, working_dir,out_file_root)
+	cmd = "dspsr -N %s -d %s -b %s -E %s -L %s   -A %s -O %s/%s -e fits "%(psrj,pol_opt,nbins,parfile, integ_durn, fil_file, working_dir,out_file_root)
 	print("cmd :: %s"%cmd)
 	# Run dspsr here
 	if not test_run:
@@ -331,10 +333,10 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 
 	#= Deleting .fil file ===================================================================================
 	if delete_tmp_files:
-		print("Removing %s/%s ..."%(working_dir, fil_file), end=' ')
+		print("Removing %s ..."%(fil_file), end=' ')
 		if not test_run:
 			try:
-				os.remove("%s/%s"%(working_dir, fil_file))
+				os.remove(fil_file)
 				print("Done.")
 			except:
 				print("Could not delete fil file.")
@@ -354,7 +356,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		# rfiClean execuable is in /home/ymaan/bin/ .
 		#cmd = ("rficlean -t 16384  -ft 6  -st 10  -rt 4  -white  -pcl  -psrf %f  -psrfbins 32  -o %s/%s  -ps %s.rfiClean.ps -gm %s/ttemp-gm.info  -gmtstamp %s/%s   %s/%s"%(f0psr, working_dir,cleanfil_file, out_file_root, working_dir,psrj, input_dir,timestamp_file,  input_dir,rawdatafile))
 		#cmd = ('crp_rficlean_gm.sh  %s/%s  /home/ymaan/inpta_pipeline/inpta_rficlean.flags  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file,  Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
-		cmd = ('crp_rficlean_gm.sh  %s/%s  %s  %d  %s/%s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s/%s"'%(working_dir,cleanfil_file, rfic_conf_file, Nprocess,  input_dir,rawdatafile,   working_dir,psrj,  f0psr,  input_dir,timestamp_file))
+		cmd = ('crp_rficlean_gm.sh  %s/%s  %s  %d  %s  %s/%s-ttemp-gm.info  "-psrf %f  -psrfbins 32  -gmtstamp %s"'%(working_dir,cleanfil_file, rfic_conf_file, Nprocess, rawdatafile,  working_dir, psrj,  f0psr, timestampfile))
 		print("cmd :: %s"%(cmd))
 		# run the command to generate rfiCleaned filterbank file...
 		if not test_run:
@@ -364,7 +366,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 		
 		# Now generate the rfiClean-ed fits file using dspsr
 		dspsr_rc_start_time = time.time()
-		print("Running dspsr on rfiCleaned filterbankd file...")	
+		print("Running dspsr on rfiCleaned filterbank file...")
 		cmd = "dspsr -N %s -d %s -b %s -E %s -L %s   -A %s/%s -O %s/%s.rfiClean -e fits "%(psrj,pol_opt,nbins,parfile, integ_durn, working_dir, cleanfil_file, working_dir,out_file_root)
 		print("cmd :: %s"%cmd)
 		# Run dspsr here
