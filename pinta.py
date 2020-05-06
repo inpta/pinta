@@ -211,26 +211,6 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 
     ########################################################################################################
 
-    #= Pulsar frequency and hdr file for rficlean ==========================================================
-    if run_rficlean:
-        
-        print("Trying to get the pulsar's spin frequency...\n")
-        try:
-            f0psr = utils.fetch_f0(parfile)
-        except:
-            print("Could not fetch F0 from the parfile. Quitting...")
-            sys.exit(0)
-        if f0psr<0.0:
-            print("could not fetch F0 from the parfile. Quitting...")
-            sys.exit(0)
-        
-        print("Trying to make the rficlean-gmhdr file ...\n")
-        if not utils.make_rficlean_hdrfile(("%s/%s-ttemp-gm.info"%(working_dir,psrj)), psrj,frequency,nchannels,bandwidth,samplingtime,sideband_):
-            print ("Could not make the rficlean-gmhdr file!")
-            sys.exit(0)
-    
-    #########################################################################################################
-
     #= Timestamp file =======================================================================================
     print("Processing timestamp file...", end=' ')
     try:
@@ -347,8 +327,22 @@ for i,pipeline_input in enumerate(pipeline_in_data):
     
     #= Running rfiClean =====================================================================================
     if run_rficlean:
-        # #################################################################################
-        # =================================================================================
+        #= Pulsar frequency and hdr file for rficlean =======================================================    
+        print("Trying to get the pulsar's spin frequency...\n")
+        try:
+            f0psr = utils.fetch_f0(parfile)
+        except:
+            print("Could not fetch F0 from the parfile. Quitting...")
+            sys.exit(0)
+        if f0psr<0.0:
+            print("could not fetch F0 from the parfile. Quitting...")
+            sys.exit(0)
+        
+        print("Trying to make the rficlean-gmhdr file ...\n")
+        if not utils.make_rficlean_hdrfile(("%s/%s-ttemp-gm.info"%(working_dir,psrj)), psrj,frequency,nchannels,bandwidth,samplingtime,sideband_):
+            print ("Could not make the rficlean-gmhdr file!")
+            sys.exit(0)
+
         # Now get a rfiCleaned filterbank file
         rficlean_start_time = time.time()
         cleanfil_file = out_file_root+'.rfiClean.fil' 
