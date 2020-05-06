@@ -34,7 +34,7 @@ opts = dict(opts)
 #= Displaying help =============================================================================================
 if opts.get("--help") is not None:
     print("Usage : ")
-    print("uGMRT_pipeline.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>")
+    print("pinta.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>")
     sys.exit(0)
 
 ################################################################################################################
