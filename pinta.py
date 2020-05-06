@@ -9,7 +9,6 @@
      then generate a rfiCleaned fits file as well.  -- yogesh, July 28)
 """
 
-
 import shutil
 import sys
 import os
@@ -395,7 +394,7 @@ for i,pipeline_input in enumerate(pipeline_in_data):
         print("cmd :: ",cmd)
         if not test_run:
             os.system(cmd)
-        # #################################################################################
+    # #################################################################################
 
     print("Processing %s (%d of %d) successful."%(psrj,i+1,no_of_observations))
     
