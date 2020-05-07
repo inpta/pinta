@@ -187,7 +187,7 @@ if not os.access(aux_dir, os.F_OK):
 ################################################################################################################
 """
 
-no_of_observations = len(pipeline_in_data)
+no_of_observations = len(session.pipeline_items)
 """ 
 for i,pipeline_input in enumerate(pipeline_in_data):
     
