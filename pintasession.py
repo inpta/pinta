@@ -178,7 +178,7 @@ class PipelineItem:
         self.freq_lo = float(pipeline_in_row[3])
 
         self.intfreq = utils.choose_int_freq(self.freq_lo)        
-        utils.copy_gptool_in(session.gptdir, session.current_dir, self.intfreq)
+        utils.copy_gptool_in(session.gptool_in_dir, session.current_dir, self.intfreq)
         
         self.nbin = int(pipeline_in_row[4])
         
