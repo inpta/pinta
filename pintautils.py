@@ -140,3 +140,23 @@ def choose_int_freq(freq):
     i = np.argmin(np.abs(int_freqs-freq))
     return int_freqs[i]
 
+def process_sideband(sideband_):
+    if sideband_ == 'USB':
+        sideband = 'gmgwbf'
+    elif sideband_ == 'LSB':
+        sideband = 'gmgwbr'
+    else:
+        raise ValueError("The given sideband {} is invalid.".format(sideband_))
+    return sideband
+
+def process_freq(freq_lo, nchan, chanwidth, cohded):
+    return freq_lo
+
+def copy_gptool_in(gptdir, current_dir, intfreq):
+    src = "{}/gptool.in.{}".format(gptdir, intfreq)
+    dst = "{}/gptool.in".format(current_dir)
+
+def check_mkdir(dirname):
+    if not os.access(dirname, os.F_OK):
+        print("Creating directory", dirname)
+        os.mkdir(dirname)
