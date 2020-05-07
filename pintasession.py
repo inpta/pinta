@@ -134,8 +134,9 @@ class Session:
         for idx, row in enumerate(self.pipeline_in_data):
             try:
                 self.pipeline_items.append( PipelineItem(self, row) )
-            except:
+            except Exception as e:
                 print("Error processing row #{} of pipeline.in".format(idx+1))
+                print(e)
                 
                 
     def get_lock(self):
