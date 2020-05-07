@@ -133,7 +133,7 @@ class Session:
         self.pipeline_items = []
         for idx, row in enumerate(self.pipeline_in_data):
             try:
-                self.pipeline_items.append( PipelineItem(self, row) )
+                self.pipeline_items.append( PipelineItem(self, row, idx) )
             except Exception as e:
                 print("Error processing row #{} of pipeline.in".format(idx+1))
                 print(e)
@@ -164,7 +164,7 @@ class Session:
             os.remove(self.lockfile)
 
 class PipelineItem:
-    def __init__(self, session, pipeline_in_row):
+    def __init__(self, session, pipeline_in_row, idx):
         
         self.jname = pipeline_in_row[0]
         
@@ -201,6 +201,8 @@ class PipelineItem:
         self.cohded = bool(int(pipeline_in_row[11]))
         
         self.freq = utils.process_freq(self.freq_lo, self.nchan, self.chanwidth, self.cohded)
+
+        self.idx = idx
 
         self.auxdir = '{}/{}'.format(session.logdir, idx)
         self.logdir = '{}/{}'.format(session.auxdir, idx)
