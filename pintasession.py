@@ -100,7 +100,7 @@ class Session:
             program_list += ['crp_rficlean_gm.sh']
         for program in program_list:
             if not tests.check_program(program):
-                pass #sys.exit(0)
+                sys.exit(0)
         
         #= Checking gptool.in files for permissions ====================================================================
         if self.run_gptool:
