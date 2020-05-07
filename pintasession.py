@@ -173,7 +173,7 @@ class PipelineItem:
         self.timestampfile = tests.test_input_file( "{}/{}".format(session.working_dir, pipeline_in_row[2]) )
         self.timestamp = utils.process_timestamp(self.timestampfile)
         
-        self.parfile = tests.test_input_file( "{}/{}.par".format(session.pardir, self.jname) )
+        self.parfile = tests.test_input_file( "{}/{}.par".format(session.par_dir, self.jname) )
         
         self.freq_lo = float(pipeline_in_row[3])
 
