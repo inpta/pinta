@@ -189,7 +189,7 @@ class PipelineItem:
 
         self.tsmpl = float(pipeline_in_row[7])
         
-        self.sideband = float(pipeline_in_row[8])
+        self.sideband = pipeline_in_row[8]
         self.sideband_code = utils.process_sideband(self.sideband)
         
         self.npol = int(pipeline_in_row[9])
