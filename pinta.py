@@ -185,9 +185,10 @@ if not os.access(aux_dir, os.F_OK):
     os.mkdir(aux_dir)
 
 ################################################################################################################
- """
+"""
 
 no_of_observations = len(pipeline_in_data)
+""" 
 for i,pipeline_input in enumerate(pipeline_in_data):
     
     psr_start_time = time.time()    
@@ -418,3 +419,4 @@ for i,pipeline_input in enumerate(pipeline_in_data):
 print("Process finished.")
 print("Removing lock file...")
 os.remove(lockfile)
+ """
