@@ -1,15 +1,3 @@
-#!/usr/bin/python3
-""" Generate and execute commands to reduce the raw uGMRT data into psrfits format.
-
-    Original developer:  Abhimanyu Susobhanan
-
-    Contributing developer: Yogesh Maan
-
-    (included appropriate modules and commands to rfiClean the raw-gmrt-data and
-     then generate a rfiCleaned fits file as well.  -- yogesh, July 28)
-"""
-
-
 import shutil
 import sys
 import os

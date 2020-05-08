@@ -1,7 +1,6 @@
 import subprocess
 import time
 import pintautils as utils
-import sys
 
 def exec_cmd(session, item, branch, program):
     logfile = log_file_name(session, item, branch, program)
