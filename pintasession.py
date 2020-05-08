@@ -3,6 +3,7 @@ import sys
 import os
 import yaml
 import numpy as np
+import traceback
 import pintatests as tests
 import pintautils as utils
 
@@ -100,7 +101,7 @@ class Session:
             program_list += ['crp_rficlean_gm.sh']
         for program in program_list:
             if not tests.check_program(program):
-                sys.exit(0)
+                pass#sys.exit(0)
         
         #= Checking gptool.in files for permissions ====================================================================
         if self.run_gptool:
@@ -136,7 +137,7 @@ class Session:
                 self.pipeline_items.append( PipelineItem(self, row, idx) )
             except Exception as e:
                 print("Error processing row #{} of pipeline.in".format(idx+1))
-                print(e)
+                traceback.print_exc()
                 
                 
     def get_lock(self):
@@ -169,6 +170,7 @@ class PipelineItem:
         self.jname = pipeline_in_row[0]
         
         self.rawdatafile = tests.test_input_file( "{}/{}".format(session.working_dir, pipeline_in_row[1]) )
+        self.input_size = os.stat(self.rawdatafile).st_size//(1024**2)
         
         self.timestampfile = tests.test_input_file( "{}/{}".format(session.working_dir, pipeline_in_row[2]) )
         self.timestamp = utils.process_timestamp(self.timestampfile)
@@ -208,5 +210,14 @@ class PipelineItem:
         self.logdir = '{}/{}'.format(session.auxdir, idx)
         utils.check_mkdir(self.logdir)
         utils.check_mkdir(self.auxdir)
+        
+        self.output_root = "{}.{}.{}.{}M".format(self.jname, int(self.timestamp), self.intfreq, self.input_size)
+        
+        self.f0psr = utils.fetch_f0(self.parfile)
+        if self.f0psr <= 0:
+            raise OSError("Could not read pulsar frequency from par file {}.".format(self.parfile))
+    
+    def desc(self):
+        return '{}, MJD {}, {} MHz, {}'.format(self.jname, int(self.timestamp), self.intfreq, "CDP" if self.cohded else "PA")
     
 session = Session()

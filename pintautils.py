@@ -106,7 +106,7 @@ def fetch_f0(parfile_name):
                     #print ("fetched F0 :  %f \n "%f0)
                 except:
                     pass #print ("F0 is not in this line. ")
-    print ("Pulsar spin-frequency found :  %f \n "%f0)
+    print ("Pulsar spin-frequency found :  %f "%f0)
     return f0
 
 def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,samplingtime,whichband):
