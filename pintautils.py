@@ -6,6 +6,7 @@ import parse
 import astropy.time as astrotime
 import getopt
 import time
+import glob
 
 def touch_file(fname):
     with open(fname, 'w'):
@@ -86,8 +87,13 @@ def process_freq(freq_lo, nchan, chanwidth, cohded):
 def copy_gptool_in(gptdir, current_dir, intfreq):
     src = "{}/gptool.in.{}".format(gptdir, intfreq)
     dst = "{}/gptool.in".format(current_dir)
+    shutil.copy(src, dst)
+    print("[INFO] Copied gptool.in file for freq {}".format(intfreq))
 
 def check_mkdir(dirname):
     if not os.access(dirname, os.F_OK):
         print("[INFO] Creating directory", dirname)
         os.mkdir(dirname)
+    
+def move_aux_files(auxdir):
+    aux_files_wcards = ["*.info", "*.gpt", "pdmp.*"]

@@ -23,6 +23,7 @@ from pintasession import session
 for idx, item in enumerate(session.pipeline_items):
     
     if session.run_gptool:
+        utils.copy_gptool_in(session.gptool_in_dir, session.current_dir, item.intfreq)
         pexec.gptool_branch(session, item)
     else:
         pexec.norfix_branch(session, item)
@@ -30,3 +31,8 @@ for idx, item in enumerate(session.pipeline_items):
     if session.run_rficlean:
         pexec.rficlean_branch(session, item)
 
+    if session.retain_aux:
+        util.move_aux_files(item.auxdir)
+    else:
+        util.remove_aux_files()
+            

@@ -19,7 +19,7 @@ class Session:
         
         #= Parsing command line ========================================================================================
         cmdargs = sys.argv[1:]
-        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "help", "test", "no-gptool", "no-rficlean", "nodel", "rficconf"])
+        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux"])
         opts = dict(opts)
         
         #= Displaying help =============================================================================================
@@ -130,8 +130,13 @@ class Session:
             print("Invalid format... Quitting...")
             sys.exit(0)
         
-        self.auxdir = "{}/aux".format(self.working_dir)
-        utils.check_mkdir(self.auxdir)
+        self.retain_aux = opts.get("--retain-aux") is None
+        if self.retain_aux:
+            self.auxdir = "{}/aux".format(self.working_dir)
+            utils.check_mkdir(self.auxdir)
+            print("[CONFIG] Will move auxiliary files to", self.auxdir)
+        else:
+            print("[CONFIG] Will remove auxiliary files.")
         
         self.logdir = "{}/log".format(self.working_dir)
         utils.check_mkdir(self.logdir)
@@ -190,9 +195,7 @@ class PipelineItem:
         
         self.freq_lo = float(pipeline_in_row[3])
 
-        self.intfreq = utils.choose_int_freq(self.freq_lo)        
-        if session.run_gptool:
-            utils.copy_gptool_in(session.gptool_in_dir, session.current_dir, self.intfreq)
+        self.intfreq = utils.choose_int_freq(self.freq_lo)
         
         self.nbin = int(pipeline_in_row[4])
         
@@ -218,10 +221,12 @@ class PipelineItem:
 
         self.idx = idx
 
-        self.auxdir = '{}/{}'.format(session.logdir, idx)
         self.logdir = '{}/{}'.format(session.auxdir, idx)
         utils.check_mkdir(self.logdir)
-        utils.check_mkdir(self.auxdir)
+
+        if self.retain_aux:
+            self.auxdir = '{}/{}'.format(session.logdir, idx)
+            utils.check_mkdir(self.auxdir)
         
         self.output_root = "{}.{}.{}.{}M".format(self.jname, int(self.timestamp), self.intfreq, self.input_size)
         
