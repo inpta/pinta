@@ -12,8 +12,8 @@ def exec_cmd(session, item, branch, program):
         cmd = "gptool -f {} -nodedisp -o {}".format(item.rawdatafile, session.working_dir)
     elif program == 'dspsr':
         fil_file = output_file_name(session, item, branch, 'fil')
-        fits_file = output_file_name(session, item, branch, 'fits')
-        cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -A {} -O {}".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, fil_file, fits_file)
+        fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
+        cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, fil_file, fits_file_prefix)
     elif program == 'pdmp':
         fits_file = output_file_name(session, item, branch, 'fits')
         summary_file = output_file_name(session, item, branch, 'summary.ps')
