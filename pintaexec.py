@@ -39,7 +39,7 @@ def exec_cmd(session, item, branch, program):
         
             stop_time = time.time()
             exec_time = stop_time-start_time
-            print_exec_time(branch, program, exectime)
+            print_exec_time(branch, program, exec_time)
     except:
         raise OSError("Error while executing command.\ncmd :: "+cmd)
 
