@@ -4,7 +4,8 @@ import time
 import pintautils as utils
 
 def exec_cmd(session, item, branch, program):
-    logfile = log_file_name(session, item, branch, program)
+    outfile = log_file_name(session, item, branch, program, 'out')
+    errfile = log_file_name(session, item, branch, program, 'err')
     
     print("[LOG] {}/{} output will be written to {}".format(branch, program, logfile))
     
@@ -32,10 +33,12 @@ def exec_cmd(session, item, branch, program):
         if not session.test_mode:
             start_time = time.time()    
             
-            lf = open(logfile, 'w')
-            p = subprocess.Popen(cmd_split, stdout=lf)
+            of = open(outfile, 'w')
+            ef = open(errfile, 'w')
+            p = subprocess.Popen(cmd_split, stdout=of, stderr=ef)
             p.wait()
-            lf.close()
+            of.close()
+            ef.close()
         
             stop_time = time.time()
             exec_time = stop_time-start_time
@@ -46,8 +49,8 @@ def exec_cmd(session, item, branch, program):
 def output_file_name(session, item, branch, ext):
     return "{}/{}.{}.{}".format(session.working_dir, item.output_root, branch, ext)
 
-def log_file_name(session, item, branch, program):
-    return "{}/{}.{}.log".format(session.logdir, program, branch)
+def log_file_name(session, item, branch, program, dev):
+    return "{}/{}.{}.{}".format(session.logdir, program, branch, dev)
 
 def print_exec_time(branch, program, exectime):
     print("[TIME] Execution time for {}/{} = {} s".format(branch, program, exectime))
