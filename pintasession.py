@@ -11,6 +11,10 @@ import pintautils as utils
 helpmsg = "Usage:\npinta.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>"
 
 class Session:
+    """  
+        Contains information that is common to all items such as working_dir, input_dir etc.
+    """
+
     def __init__(self):
         
         #= Parsing command line ========================================================================================
@@ -166,6 +170,11 @@ class Session:
             os.remove(self.lockfile)
 
 class PipelineItem:
+    """  
+        Contains information that is specific to each item.
+        Each object corresponds to one line in pipeline.in file/.
+    """
+
     def __init__(self, session, pipeline_in_row, idx):
         
         self.jname = pipeline_in_row[0]
@@ -181,7 +190,8 @@ class PipelineItem:
         self.freq_lo = float(pipeline_in_row[3])
 
         self.intfreq = utils.choose_int_freq(self.freq_lo)        
-        utils.copy_gptool_in(session.gptool_in_dir, session.current_dir, self.intfreq)
+        if session.run_gptool:
+            utils.copy_gptool_in(session.gptool_in_dir, session.current_dir, self.intfreq)
         
         self.nbin = int(pipeline_in_row[4])
         

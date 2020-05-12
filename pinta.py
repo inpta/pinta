@@ -1,12 +1,7 @@
 #!/usr/bin/python3
-""" Generate and execute commands to reduce the raw uGMRT data into psrfits format.
+""" Generate and execute commands to reduce the raw uGMRT data into TIMER format.
 
-    Original developer:  Abhimanyu Susobhanan
-
-    Contributing developer: Yogesh Maan
-
-    (included appropriate modules and commands to rfiClean the raw-gmrt-data and
-     then generate a rfiCleaned fits file as well.  -- yogesh, July 28)
+    Developers: Abhimanyu Susobhanan, Yogesh Maan
 """
 
 import shutil
