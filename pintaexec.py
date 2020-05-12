@@ -85,7 +85,7 @@ def run_filterbank(session, item, branch):
         os.system(cmd)
         stop_time = time.time()
         
-        print_exec_time(branch, program, exectime)
+        print_exec_time(branch, program, stop_time-start_time)
 
 def run_dspsr(session, item, branch):
     program = 'dspsr'
