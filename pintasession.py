@@ -224,7 +224,7 @@ class PipelineItem:
         self.logdir = '{}/{}'.format(session.auxdir, idx)
         utils.check_mkdir(self.logdir)
 
-        if self.retain_aux:
+        if session.retain_aux:
             self.auxdir = '{}/{}'.format(session.logdir, idx)
             utils.check_mkdir(self.auxdir)
         
