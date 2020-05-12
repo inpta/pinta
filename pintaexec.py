@@ -1,4 +1,5 @@
 import subprocess
+import os
 import time
 import pintautils as utils
 
@@ -32,7 +33,7 @@ def exec_cmd(session, item, branch, program):
             start_time = time.time()    
             
             lf = open(logfile, 'w')
-            p = subprocess.Popen(cmd_split, stdout=logfile)
+            p = subprocess.Popen(cmd_split, stdout=lf)
             p.wait()
             lf.close()
         
