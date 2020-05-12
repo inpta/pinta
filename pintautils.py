@@ -10,7 +10,7 @@ import time
 def touch_file(fname):
     with open(fname, 'w'):
         os.utime(fname, None)
-
+"""  
 def check_program(program):
     print("Checking for %s..."%program, end=" ")
     program_found = shutil.which(program) is not None
@@ -67,6 +67,7 @@ def check_input_file(file_path):
     else:
         print("OK... ")
         return True
+"""
 
 def process_timestamp(timestamp_file_name):
     timestamp_file = open(timestamp_file_name,'r')
@@ -94,16 +95,16 @@ def fetch_f0(parfile_name):
                     #print ("fetched F0 :  %f \n "%f0)
                 except:
                     pass #print ("F0 is not in this line. ")
-    print ("Pulsar spin-frequency found :  %f "%f0)
+    print ("[INPUT] Pulsar spin-frequency found :  %f "%f0)
     return f0
 
 def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,samplingtime,whichband):
-        print('Removing any previous rfiClean-gmhdr file %s   ...  '%(file_name), end=' ')
-        try:
+        print('[INFO] Removing any previous rfiClean-gmhdr file %s   ...  '%(file_name), end=' ')
+        try: 
             os.remove("%s"%(file_name))
             print("Done.")
         except:
-            print("Could not delete the rfiClean-gmhdr file!")
+            print("[ERROR] Could not delete the rfiClean-gmhdr file!")
 
         with open(file_name, 'w') as hdrfile:
             try:
@@ -114,11 +115,11 @@ def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,sampling
                 elif whichband == 'LSB':
                      hdrfile.write(str(float(nchannels)*float(bandwidth)) + '\n')
                 else:
-                     print("Unrecognizable sideband. Quitting...")
+                     print("[ERROR] Unrecognizable sideband. Quitting...")
                      sys.exit(0)
                 hdrfile.write(str(nchannels) + '\n')
                 hdrfile.write(psrj)
-                print ("The rfiClean-gmhdr file written out!")
+                print ("[INFO] The rfiClean-gmhdr file written out!")
             except:
                 return False
         return True
@@ -146,5 +147,5 @@ def copy_gptool_in(gptdir, current_dir, intfreq):
 
 def check_mkdir(dirname):
     if not os.access(dirname, os.F_OK):
-        print("Creating directory", dirname)
+        print("[INFO] Creating directory", dirname)
         os.mkdir(dirname)

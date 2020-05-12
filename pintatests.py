@@ -3,7 +3,7 @@ import sys
 import shutil
 
 def test_dir(folder):
-    print('Checking directory %s for permissions...'%folder, end=" ")
+    print('[CHECK] Checking directory %s for permissions...'%folder, end=" ")
     if not os.access(folder, os.F_OK):
         print("%s does not exist... Quitting..."%folder)
     elif not os.path.isdir(folder):
@@ -18,7 +18,7 @@ def test_dir(folder):
     raise OSError()
     
 def test_read_dir(folder):
-    print('Checking directory %s for permissions...'%folder, end=" ")
+    print('[CHECK] Checking directory %s for permissions...'%folder, end=" ")
     if not os.access(folder, os.F_OK):
         print("%s does not exist... Quitting..."%folder)
     elif not os.path.isdir(folder):
@@ -31,7 +31,7 @@ def test_read_dir(folder):
     raise OSError()
      
 def test_input_file(file_path):
-    print('Checking file %s for permissions...'%file_path, end=' ')
+    print('[CHECK] Checking file %s for permissions...'%file_path, end=' ')
     if not os.access(file_path, os.F_OK):
         print("%s does not exist... Quitting..."%file_path)
     elif not os.path.isfile(file_path):
@@ -44,7 +44,7 @@ def test_input_file(file_path):
     raise OSError()
 
 def check_program(program):
-    print("Checking for %s..."%program, end=" ")
+    print("[CHECK] Checking for %s..."%program, end=" ")
     program_found = shutil.which(program) is not None
     if program_found:
         print("OK...")
