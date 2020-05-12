@@ -10,64 +10,6 @@ import time
 def touch_file(fname):
     with open(fname, 'w'):
         os.utime(fname, None)
-"""  
-def check_program(program):
-    print("Checking for %s..."%program, end=" ")
-    program_found = shutil.which(program) is not None
-    if program_found:
-        print("OK...")
-    else:
-        print("Not found... Quitting...")
-    return program_found
-
-def check_dir(folder):
-    print('Checking directory %s for permissions...'%folder, end=" ")
-    if not os.access(folder, os.F_OK):
-        print("%s does not exist... Quitting..."%folder)
-        return False
-    elif not os.path.isdir(folder):
-        print("%s is not a directory... Quitting..."%folder)
-        return False
-    elif not os.access(folder, os.R_OK):
-        print("%s not readable... Quitting..."%folder)
-        return False
-    elif not os.access(folder, os.W_OK):
-        print("%s not writable... Quitting..."%folder)
-        return False
-    else:
-        print("OK... ")
-        return True
-
-def check_read_dir(folder):
-    print('Checking directory %s for permissions...'%folder, end=" ")
-    if not os.access(folder, os.F_OK):
-        print("%s does not exist... Quitting..."%folder)
-        return False
-    elif not os.path.isdir(folder):
-        print("%s is not a directory... Quitting..."%folder)
-        return False
-    elif not os.access(folder, os.R_OK):
-        print("%s not readable... Quitting..."%folder)
-        return False
-    else:
-        print("OK... ")
-        return True
-
-def check_input_file(file_path):
-    print('Checking file %s for permissions...'%file_path, end=' ')
-    if not os.access(file_path, os.F_OK):
-        print("%s does not exist... Quitting..."%file_path)
-        return False
-    elif not os.path.isfile(file_path):
-        print("%s is not a file... Quitting..."%file_path)
-        return False
-    elif not os.access(file_path, os.R_OK):
-        print("%s not readable... Quitting..."%file_path)
-        return False
-    else:
-        print("OK... ")
-        return True
-"""
 
 def process_timestamp(timestamp_file_name):
     timestamp_file = open(timestamp_file_name,'r')
