@@ -7,7 +7,8 @@ def exec_cmd(session, item, branch, program):
     outfile = log_file_name(session, item, branch, program, 'out')
     errfile = log_file_name(session, item, branch, program, 'err')
     
-    print("[LOG] {}/{} output will be written to {}".format(branch, program, logfile))
+    print("[LOG] {}/{} stdout will be written to {}".format(branch, program, outfile))
+    print("[LOG] {}/{} stderr will be written to {}".format(branch, program, errfile))
     
     if branch == 'gptool' and program == 'gptool':
         cmd = "gptool -f {} -nodedisp -o {}".format(item.rawdatafile, session.working_dir)
