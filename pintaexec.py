@@ -5,6 +5,8 @@ import pintautils as utils
 def exec_cmd(session, item, branch, program):
     logfile = log_file_name(session, item, branch, program)
     
+    print("{}/{} output will be written to {}".format(branch, program, logfile))
+    
     if branch == 'gptool' and program == 'gptool':
         cmd = "gptool -f {} -nodedisp -o {}".format(item.rawdatafile, session.working_dir)
     elif program == 'dspsr':
