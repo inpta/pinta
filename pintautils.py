@@ -81,8 +81,19 @@ def process_sideband(sideband_):
         raise ValueError("The given sideband {} is invalid.".format(sideband_))
     return sideband
 
-def process_freq(freq_lo, nchan, chanwidth, cohded):
-    return freq_lo
+def process_freq(freq_lo, nchan, bandwidth, sideband, cohded):
+    if not cohded:
+        if sideband == 'LSB':
+            f1 = freq_lo
+        else:
+            f1 = freq_lo + bandwidth
+    else:
+        if sideband == 'LSB':
+            f1 = freq_lo - bandwidth/(2*nchan)
+        else:
+            f1 = freq_lo + bandwidth*(1 - 1/(2*nchan))
+    
+    return f1
 
 def copy_gptool_in(gptdir, current_dir, intfreq):
     src = "{}/gptool.in.{}".format(gptdir, intfreq)
@@ -111,4 +122,9 @@ def remove_aux_files(session, item):
     for src in aux_files:
         print("[INFO] Removing file {}".format(src))
         os.unlink(src)
-    
+
+def print_log(session, message):
+    print(message)
+    if session.log_to_file:
+        session.logfile.write(message+"\n")
+

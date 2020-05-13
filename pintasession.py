@@ -11,7 +11,7 @@ import socket
 import pintatests as tests
 import pintautils as utils
 
-helpmsg = "Usage:\npinta.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--gptdir <...>] [--pardir <...>] <input_dir> <working_dir>"
+helpmsg = "Usage:\npinta.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
 
 class Session:
     """  
@@ -22,13 +22,17 @@ class Session:
         
         #= Parsing command line ========================================================================================
         cmdargs = sys.argv[1:]
-        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux"])
+        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file"])
         opts = dict(opts)
         
         #= Displaying help =============================================================================================
         if opts.get("--help") is not None:
             print(helpmsg)
-            sys.exit(0)        
+            sys.exit(0)
+        
+        #= Log to file =================================================================================================
+        if opts.get("--logfile") is not None:
+            self.logfile = "{}/log/{}"
         
         #= User and time ===============================================================================================
         self.user = getpass.getuser()
@@ -139,7 +143,7 @@ class Session:
             print("Invalid format... Quitting...")
             sys.exit(0)
         
-        self.retain_aux = opts.get("--retain-aux") is None
+        self.retain_aux = opts.get("--retain-aux") is not None
         if self.retain_aux:
             self.auxdir = "{}/aux".format(self.working_dir)
             utils.check_mkdir(self.auxdir)
@@ -209,10 +213,9 @@ class PipelineItem:
         self.nbin = int(pipeline_in_row[4])
         
         self.nchan = int(pipeline_in_row[5])
-        self.chanwidth = float(pipeline_in_row[6])
-        if self.chanwidth >= 0:
-            raise ValueError("ChannelWidth should be negative.")
-
+        self.bandwidth = float(pipeline_in_row[6])
+        self.chanwidth = -self.bandwidth/self.nchan
+        
         self.tsmpl = float(pipeline_in_row[7])
         
         self.sideband = pipeline_in_row[8]
@@ -226,7 +229,7 @@ class PipelineItem:
 
         self.cohded = bool(int(pipeline_in_row[11]))
         
-        self.freq = utils.process_freq(self.freq_lo, self.nchan, self.chanwidth, self.cohded)
+        self.freq = utils.process_freq(self.freq_lo, self.nchan, self.bandwidth, self.sideband, self.cohded)
 
         self.idx = idx
 
