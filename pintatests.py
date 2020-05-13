@@ -50,4 +50,5 @@ def check_program(program):
         print("OK...")
     else:
         print("Not found... Quitting...")
+        raise OSError()
     return program_found

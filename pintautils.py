@@ -95,7 +95,7 @@ def check_mkdir(dirname):
         print("[INFO] Creating directory", dirname)
         os.mkdir(dirname)
     
-aux_files_wcards = ["*.info", "*.gpt", "pdmp.*"]
+aux_files_wcards = ["*.info", "*.gpt", "pdmp.*", 'gptool.in*']
 
 def move_aux_files(session, item):
     glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
