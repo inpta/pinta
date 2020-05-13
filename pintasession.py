@@ -33,7 +33,7 @@ class Session:
         #= User and time ===============================================================================================
         self.user = getpass.getuser()
         self.starttime = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-        self.hostname = socket.gethostname
+        self.hostname = socket.gethostname()
         print("[INFO] pinta invoked by {} at {} on {}".format(self.user, self.starttime, self.hostname))
         
         #= Script directory and Currecnt Directory =====================================================================        
@@ -230,14 +230,14 @@ class PipelineItem:
 
         self.idx = idx
 
-        self.logdir = '{}/{}'.format(session.auxdir, idx)
+        self.output_root = "{}.{}.{}.{}M".format(self.jname, int(self.timestamp), self.intfreq, self.input_size)
+
+        self.logdir = '{}/{}'.format(session.auxdir, output_root)
         utils.check_mkdir(self.logdir)
 
         if session.retain_aux:
-            self.auxdir = '{}/{}'.format(session.logdir, idx)
+            self.auxdir = '{}/{}'.format(session.logdir, output_root)
             utils.check_mkdir(self.auxdir)
-        
-        self.output_root = "{}.{}.{}.{}M".format(self.jname, int(self.timestamp), self.intfreq, self.input_size)
         
         self.f0psr = utils.fetch_f0(self.parfile)
         if self.f0psr <= 0:
