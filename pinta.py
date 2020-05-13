@@ -32,7 +32,7 @@ for idx, item in enumerate(session.pipeline_items):
         pexec.rficlean_branch(session, item)
 
     if session.retain_aux:
-        util.move_aux_files(item.auxdir)
+        utils.move_aux_files(session, item)
     else:
-        util.remove_aux_files()
+        utils.remove_aux_files(session, item)
             

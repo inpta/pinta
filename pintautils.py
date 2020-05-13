@@ -95,5 +95,17 @@ def check_mkdir(dirname):
         print("[INFO] Creating directory", dirname)
         os.mkdir(dirname)
     
-def move_aux_files(auxdir):
-    aux_files_wcards = ["*.info", "*.gpt", "pdmp.*"]
+aux_files_wcards = ["*.info", "*.gpt", "pdmp.*"]
+
+def move_aux_files(session, item):
+    glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
+    aux_files = set(sum(map(glb, aux_files_wcards), []))
+    for src in aux_files:
+        shutil.move(src, item.auxdir)
+    
+def remove_aux_files(session, item):
+    glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
+    aux_files = set(sum(map(glb, aux_files_wcards), []))
+    for src in aux_files:
+        os.unlink(src)
+    
