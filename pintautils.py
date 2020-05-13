@@ -101,11 +101,13 @@ def move_aux_files(session, item):
     glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
     aux_files = set(sum(map(glb, aux_files_wcards), []))
     for src in aux_files:
+        print("[INFO] Moving file {} to aux.".format(src))
         shutil.move(src, item.auxdir)
     
 def remove_aux_files(session, item):
     glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
     aux_files = set(sum(map(glb, aux_files_wcards), []))
     for src in aux_files:
+        print("[INFO] Removing file {}".format(src))
         os.unlink(src)
     
