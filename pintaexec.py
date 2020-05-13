@@ -51,7 +51,7 @@ def output_file_name(session, item, branch, ext):
     return "{}/{}.{}.{}".format(session.working_dir, item.output_root, branch, ext)
 
 def log_file_name(session, item, branch, program, dev):
-    return "{}/{}.{}.{}".format(session.logdir, program, branch, dev)
+    return "{}/{}.{}.{}".format(item.logdir, program, branch, dev)
 
 def print_exec_time(branch, program, exectime):
     print("[TIME] Execution time for {}/{} = {} s".format(branch, program, exectime))

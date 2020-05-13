@@ -19,7 +19,6 @@ import pintautils as utils
 import pintaexec as pexec
 from pintasession import session
 
-
 for idx, item in enumerate(session.pipeline_items):
     
     if session.run_gptool:

@@ -4,6 +4,9 @@ import os
 import yaml
 import numpy as np
 import traceback
+import getpass
+import datetime
+import socket
 
 import pintatests as tests
 import pintautils as utils
@@ -26,6 +29,12 @@ class Session:
         if opts.get("--help") is not None:
             print(helpmsg)
             sys.exit(0)        
+        
+        #= User and time ===============================================================================================
+        self.user = getpass.getuser()
+        self.starttime = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        self.hostname = socket.gethostname
+        print("[INFO] pinta invoked by {} at {} on {}".format(self.user, self.starttime, self.hostname))
         
         #= Script directory and Currecnt Directory =====================================================================        
         self.script_dir = tests.test_read_dir( os.path.dirname(os.path.realpath(__file__)) )
