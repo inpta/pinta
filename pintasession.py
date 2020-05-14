@@ -235,11 +235,11 @@ class PipelineItem:
 
         self.output_root = "{}.{}.{}.{}M".format(self.jname, int(self.timestamp), self.intfreq, self.input_size)
 
-        self.logdir = '{}/{}'.format(session.auxdir, self.output_root)
+        self.logdir = '{}/{}'.format(session.logdir, self.output_root)
         utils.check_mkdir(self.logdir)
 
         if session.retain_aux:
-            self.auxdir = '{}/{}'.format(session.logdir, self.output_root)
+            self.auxdir = '{}/{}'.format(session.auxdir, self.output_root)
             utils.check_mkdir(self.auxdir)
         
         self.f0psr = utils.fetch_f0(self.parfile)
