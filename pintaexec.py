@@ -59,7 +59,7 @@ def print_exec_time(branch, program, exectime):
 def remove_tmp_file(session, item, branch, ext):
     if (not session.test_mode) and session.delete_tmp_files:
         filename = output_file_name(session, item, branch, ext)
-        print("Removing file", filename)
+        print("[INFO] Removing file", filename)
         os.remove(filename)
     
 def run_gptool(session, item, branch):
