@@ -13,7 +13,14 @@ import getopt
 import time
 import glob
 import yaml
+import datetime
 #import multiprocessing as mproc
+
+if '--log-to-file' in sys.argv:
+    now = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
+    logfile = 'pinta.{}.log'.format(now)
+    print('Output will be written to', logfile)
+    sys.stdout = open(logfile, 'w')
 
 import pintautils as utils
 import pintaexec as pexec
@@ -34,4 +41,5 @@ for idx, item in enumerate(session.pipeline_items):
         utils.move_aux_files(session, item)
     else:
         utils.remove_aux_files(session, item)
-            
+
+session.finish() 
