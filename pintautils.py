@@ -42,14 +42,16 @@ def fetch_f0(parfile_name):
     return f0
 
 def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,samplingtime,whichband):
+        
         print('[INFO] Removing any previous rfiClean-gmhdr file %s   ...  '%(file_name), end=' ')
         try: 
             os.remove("%s"%(file_name))
             print("Done.")
         except:
-            print("[ERROR] Could not delete the rfiClean-gmhdr file!")
+            print("Could not delete the rfiClean-gmhdr file!")
 
         with open(file_name, 'w') as hdrfile:
+            print("[INFO] Trying to make the rficlean-gmhdr file ...")
             try:
                 hdrfile.write(str(float(samplingtime)*1000.0) + '\n')
                 hdrfile.write(str(frequency) + '\n')
@@ -62,8 +64,10 @@ def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,sampling
                      sys.exit(0)
                 hdrfile.write(str(nchannels) + '\n')
                 hdrfile.write(psrj)
-                print ("[INFO] The rfiClean-gmhdr file written out!")
+                print("[INFO] The rfiClean-gmhdr file written out!")
             except:
+                print("[ERROR] Could not make the rficlean-gmhdr file! Quitting...")
+                sys.exit(0)
                 return False
         return True
 

@@ -100,11 +100,11 @@ def run_pdmp(session, item, branch):
     exec_cmd(session, item, branch, program)
 
 def run_rficlean(session, item, branch):
-    print("[INFO] Trying to make the rficlean-gmhdr file ...")
-    rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
-    if not utils.make_rficlean_hdrfile(rfic_hdrfilename, item.jname, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband):
-        print ("[ERROR] Could not make the rficlean-gmhdr file!")
-        sys.exit(0)
+    #print("[INFO] Trying to make the rficlean-gmhdr file ...")
+    #rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
+    #if not utils.make_rficlean_hdrfile(rfic_hdrfilename, item.jname, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband):
+    #    print ("[ERROR] Could not make the rficlean-gmhdr file!")
+    #    sys.exit(0)
         
     program = 'rfiClean'
     exec_cmd(session, item, branch, program)
