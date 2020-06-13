@@ -41,7 +41,7 @@ def exec_cmd(session, item, branch, program):
             
             of = open(outfile, 'w')
             ef = open(errfile, 'w')
-            p = subprocess.Popen(cmd_split, stdout=of, stderr=ef, shell=True)
+            p = subprocess.Popen(cmd_split, stdout=of, stderr=ef)
             p.wait()
             of.close()
             ef.close()
