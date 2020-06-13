@@ -197,10 +197,10 @@ class PipelineItem:
         
         self.jname = pipeline_in_row[0]
         
-        self.rawdatafile = tests.test_input_file( "{}/{}".format(session.working_dir, pipeline_in_row[1]) )
+        self.rawdatafile = tests.test_input_file( "{}/{}".format(session.input_dir, pipeline_in_row[1]) )
         self.input_size = os.stat(self.rawdatafile).st_size//(1024**2)
         
-        self.timestampfile = tests.test_input_file( "{}/{}".format(session.working_dir, pipeline_in_row[2]) )
+        self.timestampfile = tests.test_input_file( "{}/{}".format(session.imput_dir, pipeline_in_row[2]) )
         self.timestamp = utils.process_timestamp(self.timestampfile)
         print("[INPUT] The timestamp is MJD", self.timestamp)
                 
