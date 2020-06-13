@@ -24,7 +24,7 @@ def exec_cmd(session, item, branch, program):
         fil_file = output_file_name(session, item, branch, 'fil')
         rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
         Nprocess = 16
-        cmd = 'crp_rficlean_gm.sh {} {} {} {} {} "-psrf {} -psrfbins 32 -gmtstamp {}"'.format(fil_file, session.rfic_conf_file, Nprocess, item.rawdatafile, rfic_hdrfilename, item.f0psr, item.timestampfile)
+        cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfbins 32 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, item.rawdatafile, rfic_hdrfilename, item.f0psr, item.timestampfile)
     
     print("[CMD]", cmd)
     
@@ -36,7 +36,7 @@ def exec_cmd(session, item, branch, program):
             
             of = open(outfile, 'w')
             ef = open(errfile, 'w')
-            p = subprocess.Popen(cmd_split, stdout=of, stderr=ef)
+            p = subprocess.Popen(cmd_split, stdout=of, stderr=ef, shell=True)
             p.wait()
             of.close()
             ef.close()

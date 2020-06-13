@@ -37,6 +37,7 @@ for idx, item in enumerate(session.pipeline_items):
     if session.run_rficlean:
         rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
         utils.make_rficlean_hdrfile(rfic_hdrfilename, item.jname, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband)
+        os.system('ls -l *.info')
         pexec.rficlean_branch(session, item)
 
     if session.retain_aux:

@@ -64,7 +64,7 @@ def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,sampling
                      sys.exit(0)
                 hdrfile.write(str(nchannels) + '\n')
                 hdrfile.write(psrj)
-                print("[INFO] The rfiClean-gmhdr file written out!")
+                print("[INFO] The rfiClean-gmhdr file written out! {}".format(file_name))
             except:
                 print("[ERROR] Could not make the rficlean-gmhdr file! Quitting...")
                 sys.exit(0)
