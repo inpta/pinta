@@ -31,7 +31,7 @@ def exec_cmd(session, item, branch, program):
         cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfbins 32 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, item.rawdatafile, rfic_hdrfilename, item.f0psr, item.timestampfile)
         #cmd_split = ["crp_rficlean_gm.sh", fil_file, session.rfic_conf_file, str(Nprocess), item.rawdatafile, rfic_hdrfilename, rficlean_flags]
     
-    print("[CMD]", ' '.join(cmd_split))
+    print("[CMD]", cmd)
     
     #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
      
