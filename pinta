@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.6
 """ Generate and execute commands to reduce the raw uGMRT data into TIMER format.
 
     Developers: Abhimanyu Susobhanan, Yogesh Maan
