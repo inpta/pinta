@@ -49,10 +49,10 @@ class Session:
             print("[ERROR] Input and working directories must be provided as command line arguments.")
             sys.exit(0)
             
-        self.input_dir = tests.test_read_dir(args[0])
-        self.working_dir= tests.test_dir(args[1])
+        self.input_dir = tests.test_read_dir( os.path.realpath(args[0]) )
+        self.working_dir = tests.test_dir( os.path.realpath(args[1]) )
         
-        #= Getting lock on working directory============================================================================
+        #= Getting lock on working directory ===========================================================================
         self.get_lock()
         
         #= Test Mode ===================================================================================================
@@ -84,24 +84,24 @@ class Session:
         
         #= Pulsar ephemeris directory, gptool config directory and rfiClean config file ================================
         if opts.get("--pardir") is not None:
-            print("[CONFIG] *.par directory provided in command line.")
-            self.par_dir = tests.test_read_dir( opts.get("--pardir") )
+            print("[CONFIG] Pulsar ephemeris directory provided in command line.")
+            self.par_dir = tests.test_read_dir( os.path.realpath( opts.get("--pardir") ) )
         else:
-            self.par_dir = tests.test_read_dir( config['pinta']['pardir'] )
+            self.par_dir = tests.test_read_dir( os.path.realpath( config['pinta']['pardir'] ) )
 
         if self.run_gptool:
             if opts.get("--gptdir") is not None:
                 print("[CONFIG] gptool.in directory provided in command line.")
-                self.gptool_in_dir = tests.test_read_dir( opts.get("--gptdir") )
+                self.gptool_in_dir = tests.test_read_dir( os.path.realpath( opts.get("--gptdir") ) )
             else:
-                self.gptool_in_dir = tests.test_read_dir( config['pinta']['gptdir'] )
+                self.gptool_in_dir = tests.test_read_dir( os.path.realpath( config['pinta']['gptdir'] ) )
         
         if self.run_rficlean:
             if opts.get("--rficconf") is not None:
                 print("[CONFIG] rfiClean configuration file profided in command line.")
-                self.rfic_conf_file = tests.test_input_file( opts.get("--rficconf") )
+                self.rfic_conf_file = tests.test_input_file( os.path.realpath( opts.get("--rficconf") ) )
             else:
-                self.rfic_conf_file = tests.test_input_file( config['pinta']["rficconf"] )
+                self.rfic_conf_file = tests.test_input_file( os.path.realpath( config['pinta']["rficconf"] ) )
 
         #= Whether to delete intermediate outputs ======================================================================
         self.delete_tmp_files = opts.get("--nodel") is None
@@ -119,7 +119,7 @@ class Session:
             program_list += ['crp_rficlean_gm.sh']
         for program in program_list:
             if not tests.check_program(program):
-                pass#sys.exit(0)
+                sys.exit(0)
         
         #= Checking gptool.in files for permissions ====================================================================
         if self.run_gptool:
@@ -143,6 +143,7 @@ class Session:
             print("Invalid format... Quitting...")
             sys.exit(0)
         
+        #= Checking --retain-aux option and creating aux/ directory ====================================================
         self.retain_aux = opts.get("--retain-aux") is not None
         if self.retain_aux:
             self.auxdir = "{}/aux".format(self.working_dir)
@@ -151,9 +152,12 @@ class Session:
         else:
             print("[CONFIG] Will remove auxiliary files.")
         
+        
+        #= Creating log/ directory =====================================================================================
         self.logdir = "{}/log".format(self.working_dir)
         utils.check_mkdir(self.logdir)
         
+        #= Creating PipelineItem objects from the pipeline.in file =====================================================
         self.pipeline_items = []
         for idx, row in enumerate(self.pipeline_in_data):
             try:
@@ -161,7 +165,11 @@ class Session:
             except Exception as e:
                 print("[ERROR] Error processing row #{} of pipeline.in".format(idx+1))
                 traceback.print_exc()
-                
+        
+        #= Enter working directory =====================================================================================
+        print("[INFO] Enterting working directory.")
+        print("[CMD] cd {}".format(self.working_dir))
+        os.chdir(self.working_dir)       
                 
     def get_lock(self):
         self.lockfile = "{}/{}".format(self.working_dir, 'pinta.lock')
@@ -171,12 +179,8 @@ class Session:
             sys.exit(0)
         else:
             print("[LOCK] Creating lock file...")
+            print("[CMD] touch {}".format(self.lockfile))
             utils.touch_file(self.lockfile)
-        
-    def finish(self):
-        print("[LOCK] Removing lock file...")
-        os.remove(self.lockfile)
-        sys.exit(0)
     
     def exec_cmd(self, cmd, logfile):
         lfname = '{}/aux/{}'.format(self.working_dir)
@@ -185,7 +189,11 @@ class Session:
     def __del__(self):
         if hasattr(self, 'lockfile') and os.access(self.lockfile, os.F_OK): 
             print("[LOCK] Removing lock file...")
+            print("[CMD] rm {}".format(self.lockfile))
             os.remove(self.lockfile)
+            print("[INFO] Changing back to current directory.")
+            print("[CMD] cd {}".format(self.current_dir))
+            os.chdir(self.current_dir)
 
 class PipelineItem:
     """  
@@ -241,6 +249,9 @@ class PipelineItem:
         if session.retain_aux:
             self.auxdir = '{}/{}'.format(session.auxdir, self.output_root)
             utils.check_mkdir(self.auxdir)
+        
+        if session.run_rficlean:
+            self.rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, self.jname, self.idx)
         
         self.f0psr = utils.fetch_f0(self.parfile)
         if self.f0psr <= 0:

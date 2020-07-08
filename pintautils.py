@@ -99,11 +99,13 @@ def process_freq(freq_lo, nchan, bandwidth, sideband, cohded):
     
     return f1
 
-def copy_gptool_in(gptdir, current_dir, intfreq):
+def copy_gptool_in(gptdir, working_dir, intfreq):
     src = "{}/gptool.in.{}".format(gptdir, intfreq)
-    dst = "{}/gptool.in".format(current_dir)
-    shutil.copy(src, dst)
+    #dst = "{}/gptool.in".format(current_dir)
+    dst = "{}/gptool.in".format(working_dir)
+    shutil.copyfile(src, dst)
     print("[INFO] Copied gptool.in file for freq {}".format(intfreq))
+    print("[CMD] cp {} {}".format(src, dst))
 
 def check_mkdir(dirname):
     if not os.access(dirname, os.F_OK):

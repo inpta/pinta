@@ -11,11 +11,13 @@ def exec_cmd(session, item, branch, program):
     print("[LOG] {}/{} stderr will be written to {}".format(branch, program, errfile))
     
     if branch == 'gptool' and program == 'gptool':
-        cmd = "gptool -f {} -nodedisp -o {}".format(item.rawdatafile, session.working_dir)
+        cmd = "gptool -f {} -nodedisp -o {}".format(item.rawdatafile, './')
+        #cmd = "gptool -f {} -nodedisp -o {}".format(item.rawdatafile, session.working_dir)
         #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
     elif program == 'dspsr':
         fil_file = output_file_name(session, item, branch, 'fil')
-        fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
+        #fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
+        fits_file_prefix = "{}/{}.{}".format('.', item.output_root, branch)
         cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, fil_file, fits_file_prefix)
         #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
     elif program == 'pdmp':
@@ -25,10 +27,9 @@ def exec_cmd(session, item, branch, program):
         #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
     elif branch == 'rfiClean' and program == 'rfiClean':
         fil_file = output_file_name(session, item, branch, 'fil')
-        rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
+        #rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
         Nprocess = 16
-        #rficlean_flags = "-psrf {} -psrfbins 32 -gmtstamp {}".format(item.f0psr, item.timestampfile)
-        cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfbins 32 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, item.rawdatafile, rfic_hdrfilename, item.f0psr, item.timestampfile)
+        cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfbins 32 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, item.rawdatafile, item.rfic_hdrfilename, item.f0psr, item.timestampfile)
         #cmd_split = ["crp_rficlean_gm.sh", fil_file, session.rfic_conf_file, str(Nprocess), item.rawdatafile, rfic_hdrfilename, rficlean_flags]
     
     print("[CMD]", cmd)
@@ -53,7 +54,8 @@ def exec_cmd(session, item, branch, program):
         raise OSError("Error while executing command.\ncmd :: "+cmd)
 
 def output_file_name(session, item, branch, ext):
-    return "{}/{}.{}.{}".format(session.working_dir, item.output_root, branch, ext)
+    #return "{}/{}.{}.{}".format(session.working_dir, item.output_root, branch, ext)
+    return "{}/{}.{}.{}".format('.', item.output_root, branch, ext)
 
 def log_file_name(session, item, branch, program, dev):
     return "{}/{}.{}.{}".format(item.logdir, program, branch, dev)
@@ -72,9 +74,10 @@ def run_gptool(session, item, branch):
     exec_cmd(session, item, branch, program)
     
     if not session.test_mode:
-        gptfilename = "{}/{}.gpt".format(session.working_dir, os.path.basename(item.rawdatafile))
+        gptfilename = "{}/{}.gpt".format('.', os.path.basename(item.rawdatafile))
         gptfilename_new = output_file_name(session, item, branch, 'gpt.dat')
         os.rename(gptfilename, gptfilename_new)
+        print("[CMD] mv {} {}".format(gptfilename, gptfilename_new))
 
 def run_filterbank(session, item, branch):
     program = 'filterbank'
