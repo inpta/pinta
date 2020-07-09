@@ -85,7 +85,15 @@ def run_filterbank(session, item, branch):
     if branch == 'gptool':
         filterbank_in_file = output_file_name(session, item, branch, 'gpt.dat')
     else:
-        filterbank_in_file = item.rawdatafile
+        filterbank_in_file = './' + os.path.basename(item.rawdatafile)
+        if os.path.exists(filterbank_in_file):
+            print("[INFO] Removing existing symlink {}".format(filterbank_in_file))
+            print("[CMD] rm {}".format(filterbank_in_file))
+            os.remove(filterbank_in_file)
+        print("Creating symlink to the rawdatafile.")
+        print("[CMD] ln -s {} {}".format(item.rawdatafile, filterbank_in_file))
+        os.symlink(item.rawdatafile, filterbank_in_file)
+        lns = True
     
     fil_file = output_file_name(session, item, branch, 'fil')
     cmd = "filterbank {} -mjd {:0.18f} -rf {} -nch {} -bw {} -ts {} -df {} > {}".format(filterbank_in_file, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband_code, fil_file)
@@ -98,6 +106,11 @@ def run_filterbank(session, item, branch):
         stop_time = time.time()
         
         print_exec_time(branch, program, stop_time-start_time)
+        
+    if lns:
+        print("Removing symlink to the rawdatafile.")
+        print("[CMD] rm {}".format(filterbank_in_file))
+        os.remove(filterbank_in_file)
 
 def run_dspsr(session, item, branch):
     program = 'dspsr'
