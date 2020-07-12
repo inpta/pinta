@@ -93,9 +93,9 @@ def process_freq(freq_lo, nchan, bandwidth, sideband, cohded):
             f1 = freq_lo + bandwidth
     else:
         if sideband == 'LSB':
-            f1 = freq_lo - bandwidth/(2*nchan)
+            f1 = freq_lo - bandwidth/nchan
         else:
-            f1 = freq_lo + bandwidth*(1 - 1/(2*nchan))
+            f1 = freq_lo + bandwidth*(1 - 1./nchan)
     
     return f1
 
