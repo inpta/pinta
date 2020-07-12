@@ -241,7 +241,7 @@ class PipelineItem:
 
         self.idx = idx
 
-        self.output_root = "{:s}_{:0.6f}_{:d}".format(self.jname, self.timestamp, int(self.freq_lo))
+        self.output_root = "{:s}_{:0.6f}_{:d}".format(self.jname, float(self.timestamp), int(self.freq_lo))
 
         self.logdir = '{}/{}'.format(session.logdir, self.output_root)
         utils.check_mkdir(self.logdir)

@@ -18,13 +18,28 @@ def process_timestamp(timestamp_file_name):
     timestr = parse.parse("IST Time: {}\n",timestamp_file_lines[1])[0]
     datestr = parse.parse("Date: {}\n",timestamp_file_lines[2])[0]
     timestamp_file.close()
+
     day,month,year = parse.parse("{}:{}:{}",datestr)
-    datetime_IST = "%s-%s-%sT%s"%(year,month,day,timestr)
+    hh, mm, ss = parse.parse("{}:{}:{}", timestr)    
 
-    datetime = astrotime.Time(datetime_IST, format='isot', scale='utc')
-    IST_diff = astrotime.TimeDelta(3600*5.5, format='sec')    
+    #datetime_IST = "%s-%s-%sT%s"%(year,month,day,timestr)
+    date_IST = "%s-%s-%s"%(year,month,day)
+    
+    datemjd_int = astrotime.Time(date_IST, format='isot', scale='utc').mjd
+    datemjd_frc = (float(hh) + float(mm)/60 + float(ss)/3600 - 5.5)/24
 
-    return (datetime-IST_diff).mjd
+    if datemjd_frc<0:
+        datemjd_frc += 1
+        datemjd_int -= 1
+
+    # This is an ugly hack. Will change this if there is a better option.
+    datetimemjd_str = "{}.{}".format(int(datemjd_int), int(1e15*datemjd_frc))
+
+    #IST_diff = astrotime.TimeDelta(3600*5.5, format='sec')    
+    #datetimemjd = longdouble(datemjd_IST) + (float(hh) + float(mm)/60 + float(ss)/3600 - 5.5)/24
+    #return (datetime-IST_diff).mjd
+
+    return datetimemjd_str
 
 def fetch_f0(parfile_name):
     f0 = -10.0

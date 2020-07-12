@@ -98,7 +98,7 @@ def run_filterbank(session, item, branch):
         os.symlink(item.rawdatafile, filterbank_in_file)
     
     fil_file = output_file_name(session, item, branch, 'fil')
-    cmd = "filterbank {} -mjd {:0.18f} -rf {} -nch {} -bw {} -ts {} -df {} > {}".format(filterbank_in_file, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband_code, fil_file)
+    cmd = "filterbank {} -mjd {} -rf {} -nch {} -bw {} -ts {} -df {} > {}".format(filterbank_in_file, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband_code, fil_file)
     
     print("[CMD]", cmd)
     
