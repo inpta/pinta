@@ -165,7 +165,7 @@ def setup_input_ln(session, item):
             print("[CMD] ln -s {} {}".format(ln_src, ln_dst))
             os.symlink(ln_src, ln_dst)
     
-def remove_input_ln(session, item)
+def remove_input_ln(session, item):
     if not session.samedir:
         
         for infile in [item.rawdatafile, item.timestampfile]:
