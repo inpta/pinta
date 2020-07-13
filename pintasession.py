@@ -52,6 +52,10 @@ class Session:
         self.input_dir = tests.test_read_dir( os.path.realpath(args[0]) )
         self.working_dir = tests.test_dir( os.path.realpath(args[1]) )
         
+        self.samedir = self.input_dir==self.working_dir
+        if self.samedir:
+            print("[INFO] Input dir and working dir are the same.")
+        
         #= Getting lock on working directory ===========================================================================
         self.get_lock()
         
@@ -66,7 +70,7 @@ class Session:
             print("[CONFIG] Reading config from", self.config_file)
             config = yaml.load(open(self.config_file), Loader=yaml.FullLoader)
         except:
-            print("[CONFIG] Unable to read config file ", config_file)
+            print("[ERROR] Unable to read config file ", config_file)
             sys.exit(0)
         
         #= Which branches to run =======================================================================================
