@@ -102,7 +102,9 @@ class Session:
                 self.rfic_conf_file = tests.test_input_file( os.path.realpath( opts.get("--rficconf") ) )
             else:
                 self.rfic_conf_file = tests.test_input_file( os.path.realpath( config['pinta']["rficconf"] ) )
-
+        
+        tests.check_current_group(config['pinta']["group"])
+        
         #= Whether to delete intermediate outputs ======================================================================
         self.delete_tmp_files = opts.get("--nodel") is None
         if self.delete_tmp_files:
