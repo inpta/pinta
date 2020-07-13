@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+import grp
 
 def test_dir(folder):
     print('[CHECK] Checking directory %s for permissions...'%folder, end=" ")
@@ -52,3 +53,14 @@ def check_program(program):
         print("Not found... Quitting...")
         raise OSError()
     return program_found
+
+def check_current_group(grpname):
+    print("[CHECK] Checking for current group...", end=" ")
+    current_grpname = grp.getgrgid(os.getgid()).gr_name
+    if grpname == current_grpname:
+        print("OK... Current group is {}.".format(current_grpname))
+        return True
+    else:
+        print("Current group is not {}. Quitting...".format(grpname))
+        print('[INFO] You can change the current group by doing "$ newgrp {}".'.format(grpname))
+        raise OSError()
