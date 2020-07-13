@@ -159,7 +159,7 @@ def setup_input_ln(session, item):
                 os.remove(ln_dst)
             else:
                 print("[ERROR] Can't replace {}. Please check working directory.".format(ln_dst))
-                sys.exit(0)
+                raise OSError()
             
             print("[INFO] Creating symlink to {}".format(ln_src))
             print("[CMD] ln -s {} {}".format(ln_src, ln_dst))
