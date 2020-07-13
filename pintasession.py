@@ -31,8 +31,8 @@ class Session:
             sys.exit(0)
         
         #= Log to file =================================================================================================
-        if opts.get("--logfile") is not None:
-            self.logfile = "{}/log/{}"
+        #if opts.get("--logfile") is not None:
+        #    self.logfile = "{}/log/{}"
         
         #= User and time ===============================================================================================
         self.user = getpass.getuser()
