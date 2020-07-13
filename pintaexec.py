@@ -2,6 +2,7 @@ import subprocess
 import os
 import time
 import pintautils as utils
+import sys
 
 def exec_cmd(session, item, branch, program):
     outfile = log_file_name(session, item, branch, program, 'out')
@@ -157,7 +158,7 @@ def setup_input_ln(session, item):
                 print("[INFO] Removing existing symlink {}".format(ln_dst))
                 print("[CMD] rm {}".format(ln_dst))
                 os.remove(ln_dst)
-            else:
+            elif not os.path.islink(ln_dst):
                 print("[ERROR] Can't replace {}. Please check working directory.".format(ln_dst))
                 sys.exit(0)
             
