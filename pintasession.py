@@ -180,13 +180,15 @@ class Session:
     def get_lock(self):
         self.lockfile = "{}/{}".format(self.working_dir, 'pinta.lock')
         if os.access(self.lockfile, os.F_OK):
-            print("Another instance of pinta seems to be running on this directory.")
-            print("*IMPORTANT* If you are /sure/ this is a mistake, please remove pinta.lock manualy and try again. DOING THIS MAY CORRUPT THE DATA.")
-            sys.exit(0)
+            print("[ERROR] Another instance of pinta seems to be running on this directory.")
+            print("[ERROR] *IMPORTANT* If you are /sure/ this is a mistake, please remove pinta.lock manualy and try again. DOING THIS MAY CORRUPT THE DATA.")
+            self.lockfail = True
+            raise OSError()
         else:
             print("[LOCK] Creating lock file...")
             print("[CMD] touch {}".format(self.lockfile))
             utils.touch_file(self.lockfile)
+            self.lockfail = False
     
     def exec_cmd(self, cmd, logfile):
         lfname = '{}/aux/{}'.format(self.working_dir)
@@ -194,9 +196,11 @@ class Session:
     
     def __del__(self):
         if hasattr(self, 'lockfile') and os.access(self.lockfile, os.F_OK): 
-            print("[LOCK] Removing lock file...")
-            print("[CMD] rm {}".format(self.lockfile))
-            os.remove(self.lockfile)
+            if not self.lockfail:
+                print("[LOCK] Removing lock file...")
+                print("[CMD] rm {}".format(self.lockfile))
+                os.remove(self.lockfile)
+            
             print("[INFO] Changing back to current directory.")
             print("[CMD] cd {}".format(self.current_dir))
             os.chdir(self.current_dir)
