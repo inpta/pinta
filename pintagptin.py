@@ -109,5 +109,5 @@ def write_gptool_in(filename, item):
 if __name__=="__main__":
     from pintasession import session
     
-    for idx, item in enumerate(session.items):
+    for idx, item in enumerate(session.pipeline_items):
         write_gptool_in("gptool.in.{}".format(idx), item)
