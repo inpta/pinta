@@ -99,11 +99,6 @@ def run_filterbank(session, item, branch):
         stop_time = time.time()
         
         print_exec_time(branch, program, stop_time-start_time)
-        
-    if branch == 'norfix' and session.input_dir != session.working_dir:
-        print("Removing symlink to the rawdatafile.")
-        print("[CMD] rm {}".format(filterbank_in_file))
-        os.remove(filterbank_in_file)
 
 def run_dspsr(session, item, branch):
     program = 'dspsr'
