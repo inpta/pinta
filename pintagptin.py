@@ -54,7 +54,7 @@ def write_gptool_in(filename, item):
 
         write_section_title(f, "Pulsar Parameters")
         write_param(f, "Pulsar name", item.jname)
-        write_param(f, "Pulsar period (in milliseconds)", item.f0psr*1000)
+        write_param(f, "Pulsar period (in milliseconds)", 1000/item.f0psr)
         write_param(f, "DM (in pc/cc)", 0.0)
         write_section_separator(f)
         
