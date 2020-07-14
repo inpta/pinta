@@ -158,7 +158,7 @@ def setup_input_ln(session, item):
                 print("[INFO] Removing existing symlink {}".format(ln_dst))
                 print("[CMD] rm {}".format(ln_dst))
                 os.remove(ln_dst)
-            elif not os.path.islink(ln_dst):
+            elif os.path.exists(ln_dst) and not os.path.islink(ln_dst):
                 print("[ERROR] Can't replace {}. Please check working directory.".format(ln_dst))
                 raise OSError()
             
