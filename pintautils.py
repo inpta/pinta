@@ -33,11 +33,8 @@ def process_timestamp(timestamp_file_name):
         datemjd_int -= 1
 
     # This is an ugly hack. Will change this if there is a better option.
-    datetimemjd_str = "{}.{}".format(int(datemjd_int), int(1e15*datemjd_frc))
-
-    #IST_diff = astrotime.TimeDelta(3600*5.5, format='sec')    
-    #datetimemjd = longdouble(datemjd_IST) + (float(hh) + float(mm)/60 + float(ss)/3600 - 5.5)/24
-    #return (datetime-IST_diff).mjd
+    datemjd_frc_str = "{:.15f}".format(datemjd_frc).split('.')[1]
+    datetimemjd_str = "{}.{}".format(int(datemjd_int), datemjd_frc_str)
 
     return datetimemjd_str
 
