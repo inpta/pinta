@@ -1,15 +1,3 @@
-#!/usr/bin/python3
-""" Generate and execute commands to reduce the raw uGMRT data into psrfits format.
-
-    Original developer:  Abhimanyu Susobhanan
-
-    Contributing developer: Yogesh Maan
-
-    (included appropriate modules and commands to rfiClean the raw-gmrt-data and
-     then generate a rfiCleaned fits file as well.  -- yogesh, July 28)
-"""
-
-
 import shutil
 import sys
 import os
@@ -18,67 +6,11 @@ import parse
 import astropy.time as astrotime
 import getopt
 import time
+import glob
 
 def touch_file(fname):
     with open(fname, 'w'):
         os.utime(fname, None)
-
-def check_program(program):
-    print("Checking for %s..."%program, end=" ")
-    program_found = shutil.which(program) is not None
-    if program_found:
-        print("OK...")
-    else:
-        print("Not found... Quitting...")
-    return program_found
-
-def check_dir(folder):
-    print('Checking directory %s for permissions...'%folder, end=" ")
-    if not os.access(folder, os.F_OK):
-        print("%s does not exist... Quitting..."%folder)
-        return False
-    elif not os.path.isdir(folder):
-        print("%s is not a directory... Quitting..."%folder)
-        return False
-    elif not os.access(folder, os.R_OK):
-        print("%s not readable... Quitting..."%folder)
-        return False
-    elif not os.access(folder, os.W_OK):
-        print("%s not writable... Quitting..."%folder)
-        return False
-    else:
-        print("OK... ")
-        return True
-
-def check_read_dir(folder):
-    print('Checking directory %s for permissions...'%folder, end=" ")
-    if not os.access(folder, os.F_OK):
-        print("%s does not exist... Quitting..."%folder)
-        return False
-    elif not os.path.isdir(folder):
-        print("%s is not a directory... Quitting..."%folder)
-        return False
-    elif not os.access(folder, os.R_OK):
-        print("%s not readable... Quitting..."%folder)
-        return False
-    else:
-        print("OK... ")
-        return True
-
-def check_input_file(file_path):
-    print('Checking file %s for permissions...'%file_path, end=' ')
-    if not os.access(file_path, os.F_OK):
-        print("%s does not exist... Quitting..."%file_path)
-        return False
-    elif not os.path.isfile(file_path):
-        print("%s is not a file... Quitting..."%file_path)
-        return False
-    elif not os.access(file_path, os.R_OK):
-        print("%s not readable... Quitting..."%file_path)
-        return False
-    else:
-        print("OK... ")
-        return True
 
 def process_timestamp(timestamp_file_name):
     timestamp_file = open(timestamp_file_name,'r')
@@ -86,13 +18,25 @@ def process_timestamp(timestamp_file_name):
     timestr = parse.parse("IST Time: {}\n",timestamp_file_lines[1])[0]
     datestr = parse.parse("Date: {}\n",timestamp_file_lines[2])[0]
     timestamp_file.close()
+
     day,month,year = parse.parse("{}:{}:{}",datestr)
-    datetime_IST = "%s-%s-%sT%s"%(year,month,day,timestr)
+    hh, mm, ss = parse.parse("{}:{}:{}", timestr)    
 
-    datetime = astrotime.Time(datetime_IST, format='isot', scale='utc')
-    IST_diff = astrotime.TimeDelta(3600*5.5, format='sec')    
+    #datetime_IST = "%s-%s-%sT%s"%(year,month,day,timestr)
+    date_IST = "%s-%s-%s"%(year,month,day)
+    
+    datemjd_int = astrotime.Time(date_IST, format='isot', scale='utc').mjd
+    datemjd_frc = (float(hh) + float(mm)/60 + float(ss)/3600 - 5.5)/24
 
-    return (datetime-IST_diff).mjd
+    if datemjd_frc<0:
+        datemjd_frc += 1
+        datemjd_int -= 1
+
+    # This is an ugly hack. Will change this if there is a better option.
+    datemjd_frc_str = "{:.15f}".format(datemjd_frc).split('.')[1]
+    datetimemjd_str = "{}.{}".format(int(datemjd_int), datemjd_frc_str)
+
+    return datetimemjd_str
 
 def fetch_f0(parfile_name):
     f0 = -10.0
@@ -106,18 +50,20 @@ def fetch_f0(parfile_name):
                     #print ("fetched F0 :  %f \n "%f0)
                 except:
                     pass #print ("F0 is not in this line. ")
-    print ("Pulsar spin-frequency found :  %f \n "%f0)
+    print ("[INPUT] Pulsar spin-frequency found :  %f "%f0)
     return f0
 
 def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,samplingtime,whichband):
-        print('Removing any previous rfiClean-gmhdr file %s   ...  '%(file_name), end=' ')
-        try:
+        
+        print('[INFO] Removing any previous rfiClean-gmhdr file %s   ...  '%(file_name), end=' ')
+        try: 
             os.remove("%s"%(file_name))
             print("Done.")
         except:
             print("Could not delete the rfiClean-gmhdr file!")
 
         with open(file_name, 'w') as hdrfile:
+            print("[INFO] Trying to make the rficlean-gmhdr file ...")
             try:
                 hdrfile.write(str(float(samplingtime)*1000.0) + '\n')
                 hdrfile.write(str(frequency) + '\n')
@@ -126,12 +72,14 @@ def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,sampling
                 elif whichband == 'LSB':
                      hdrfile.write(str(float(nchannels)*float(bandwidth)) + '\n')
                 else:
-                     print("Unrecognizable sideband. Quitting...")
+                     print("[ERROR] Unrecognizable sideband. Quitting...")
                      sys.exit(0)
                 hdrfile.write(str(nchannels) + '\n')
                 hdrfile.write(psrj)
-                print ("The rfiClean-gmhdr file written out!")
+                print("[INFO] The rfiClean-gmhdr file written out! {}".format(file_name))
             except:
+                print("[ERROR] Could not make the rficlean-gmhdr file! Quitting...")
+                sys.exit(0)
                 return False
         return True
 
@@ -139,4 +87,62 @@ def choose_int_freq(freq):
     int_freqs = np.array((499,749,1459))
     i = np.argmin(np.abs(int_freqs-freq))
     return int_freqs[i]
+
+def process_sideband(sideband_):
+    if sideband_ == 'USB':
+        sideband = 'gmgwbf'
+    elif sideband_ == 'LSB':
+        sideband = 'gmgwbr'
+    else:
+        raise ValueError("The given sideband {} is invalid.".format(sideband_))
+    return sideband
+
+def process_freq(freq_lo, nchan, bandwidth, sideband, cohded):
+    if not cohded:
+        if sideband == 'LSB':
+            f1 = freq_lo
+        else:
+            f1 = freq_lo + bandwidth
+    else:
+        if sideband == 'LSB':
+            f1 = freq_lo - bandwidth/nchan
+        else:
+            f1 = freq_lo + bandwidth*(1 - 1./nchan)
+    
+    return f1
+
+def copy_gptool_in(gptdir, working_dir, intfreq):
+    src = "{}/gptool.in.{}".format(gptdir, intfreq)
+    #dst = "{}/gptool.in".format(current_dir)
+    dst = "{}/gptool.in".format(working_dir)
+    shutil.copyfile(src, dst)
+    print("[INFO] Copied gptool.in file for freq {}".format(intfreq))
+    print("[CMD] cp {} {}".format(src, dst))
+
+def check_mkdir(dirname):
+    if not os.access(dirname, os.F_OK):
+        print("[INFO] Creating directory", dirname)
+        os.mkdir(dirname)
+    
+aux_files_wcards = ["*.info", "*.gpt", "pdmp.*", 'gptool.in*']
+
+def move_aux_files(session, item):
+    glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
+    aux_files = set(sum(map(glb, aux_files_wcards), []))
+    for src in aux_files:
+        print("[INFO] Moving file {} to aux.".format(src))
+        dst = "{}/{}".format(item.auxdir, os.path.basename(src))
+        shutil.move(src, dst)
+    
+def remove_aux_files(session, item):
+    glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
+    aux_files = set(sum(map(glb, aux_files_wcards), []))
+    for src in aux_files:
+        print("[INFO] Removing file {}".format(src))
+        os.unlink(src)
+
+def print_log(session, message):
+    print(message)
+    if session.log_to_file:
+        session.logfile.write(message+"\n")
 
