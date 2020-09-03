@@ -18,14 +18,14 @@ Install the following pulsar packages by following the installation instructions
 
 Install the python dependencies.
 
-    `$ pip3 install parse astropy pyyaml --user`
+    $ pip3 install parse astropy pyyaml --user
 
 ### Installing `filterbank-gmrt`
 
-    `$ cd filterbank`
-    `$ make`
-    `$ make install`
-    `$ cd ..`
+    $ cd filterbank
+    $ make
+    $ make install
+    $ cd ..
 
 ### Permissions
 
@@ -33,16 +33,17 @@ One persistent issue that arises while analyzing data using a pipeline is mainta
 The way we deal with this is to use one user group for all analysis using `pinta`. 
 For example, we will use the `ugmrtpsr` group name in this guide. The following command should be run at the start of every session before running `pinta`.
 
-    `$ newgrp ugmrtpsr`
+    $ newgrp ugmrtpsr
 
 ### Installing `pinta`
 
 Say you want to install `pinta` in `/pinta/install/path/`. 
 
-    `$ git clone https://github.com/abhisrkckl/pinta.git`
-    `$ cp pinta/pinta pinta/pinta*.py pinta/pinta.yaml pinta/crp_rficlean_gm.sh /pinta/install/path/`
-    `$ chgrp ugmrtpsr /pinta/inst/path/*`
-    `$ chmod ug+x /pinta/inst/path/pinta`
+    $ git clone https://github.com/abhisrkckl/pinta.git
+    $ cp pinta/pinta pinta/pinta*.py pinta/pinta.yaml pinta/crp_rficlean_gm.sh /pinta/install/path/
+    $ chgrp ugmrtpsr /pinta/inst/path/*
+    $ chmod ug+r /pinta/inst/path/*
+    $ chmod ug+x /pinta/inst/path/pinta /pinta/inst/path/crp_rficlean_gm.sh
 
 Now add this line to your `.bashrc` file.
 
@@ -73,7 +74,7 @@ For each observation uGMRT produces two files - a binary raw data file and a tim
 
 `pinta` is invoked from the command line with the following syntax.
 
-    `$ pinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>`
+    $ pinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>
 
 - `<input_dir>` is the directory where the input (raw data and timestamp) files are saved.
 - `<working_dir>` is the directory where the output files will be created. For `pinta` to run, this directory should contain a file called `pipeline.in` containing the metadata required to do the analysis.
