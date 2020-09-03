@@ -47,7 +47,7 @@ Say you want to install `pinta` in `/pinta/install/path/`.
 
 Now add this line to your `.bashrc` file.
 
-    `$ export PATH=$PATH:/pinta/install/path/pinta`
+    $ export PATH=$PATH:/pinta/install/path/pinta
 
 ### Configuring `pinta`
 
