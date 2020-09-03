@@ -34,6 +34,7 @@ Install the python dependencies.
 One persistent issue that arises while analyzing data using a pipeline is maintaining correct permissions for the data files. 
 The way we deal with this is to use one user group for all analysis using `pinta`. 
 For example, we will use the `ugmrtpsr` group name in this guide. The following command should be run at the start of every session before running `pinta`.
+(Make sure that this group is created and you are added to it.)
 
     $ newgrp ugmrtpsr
 
