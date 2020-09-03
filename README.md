@@ -3,7 +3,7 @@
 
 A detailed description of `pinta` is given in 
 Susobhanan et al., 2020 (https://arxiv.org/abs/2007.02930).
-If you use this pipeline in your research please cite this paper.
+If you use this pipeline in your research, please cite this paper.
 
 ## Installing
 
