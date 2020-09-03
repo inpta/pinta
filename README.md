@@ -103,7 +103,7 @@ Each row in `pipeline.in` represents a raw data file. The columns are as follows
 6. Nchan - Number of frequency channels
 7. BandWidth - Observation bandwidth (MHz)
 8. TSmpl - Sampling time of observation (s)
-9. SB - Sideband (USB - Upper sideband OR LSB - Lower sideband)
+9. SB - Sideband (USB - Upper sideband / LSB - Lower sideband)
 10. Npol - Number of polarization products (1 - Total intensity / 4 - Stokes IQUV). Only total intensity is implemented at present.
 11. TSubint - Subintegration duration for folding (s)
 12. Cohded - Whether the data has been coherently dedispersed (1 - Yes / 0 - No)
