@@ -46,7 +46,7 @@ Say you want to install `pinta` in `/pinta/install/path/`.
     $ cp pinta/pinta pinta/pinta*.py pinta/pinta.yaml pinta/crp_rficlean_gm.sh /pinta/install/path/
     $ chgrp ugmrtpsr /pinta/inst/path/*
     $ chmod ug+r /pinta/inst/path/*
-    $ chmod ug+x /pinta/inst/path/pinta /pinta/inst/path/crp_rficlean_gm.sh
+    $ chmod ug+x /pinta/inst/path/pinta
 
 Now add this line to your `.bashrc` file.
 
