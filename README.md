@@ -22,8 +22,6 @@ Install the python dependencies.
 
 ### Installing `filterbank-gmrt`
 
-...WORK IN PROGRESS...
-
     $ cd filterbank-gmrt
     $ ./configure
 
