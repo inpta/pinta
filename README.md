@@ -26,7 +26,8 @@ Install the python dependencies.
     $ ./configure
 
 This script will ask for a directory where the executable will be created. Enter an appropriate path.
-
+Note that the `filterbank` executable must be in `$PATH` for `pinta` to work. 
+ 
     $ make filterbank
     $ cd ..
 
