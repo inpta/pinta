@@ -1,0 +1,29 @@
+strings_equal.c
+header.h
+read_header.c = > reads header into global bvalue
+
+correct header in these globals
+
+filterbank.h
+send_stuff.c
+filterbank_header.c => write as filterbank header 
+
+A
+read_block.c to modify to read data for different nbits and write data 
+output after identifying and reversing channel. Read function is same, but 
+write function is just fwrite. instead of float block integer etc 
+is used, nread should be all channels of one sample.
+
+invert the order of the channel
+
+write data fwrite with proper bits as per the header
+B
+
+A to B in a loop till the end of file
+
+sigproc.h
+
+error_message.c
+
+pack_unpack.c
+open_file.c
