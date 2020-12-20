@@ -24,19 +24,22 @@ Install the python dependencies.
 
 ...WORK IN PROGRESS...
 
-    $ cd filterbank
-    $ make
-    $ make install
+    $ cd filterbank-gmrt
+    $ ./configure
+
+This script will ask for a directory where the executable will be created. Enter an appropriate path.
+
+    $ make filterbank
     $ cd ..
 
 ### Permissions
 
 One persistent issue that arises while analyzing data using a pipeline is maintaining correct permissions for the data files. 
 The way we deal with this is to use one user group for all analysis using `pinta`. 
-For example, we will use the `ugmrtpsr` group name in this guide. The following command should be run at the start of every session before running `pinta`.
+For example, we will use the `pulsar` group name in this guide. The following command should be run at the start of every session before running `pinta`.
 (Make sure that this group is created and you are added to it.)
 
-    $ newgrp ugmrtpsr
+    $ newgrp pulsar
 
 ### Installing `pinta`
 
