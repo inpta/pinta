@@ -62,7 +62,7 @@ The `pinta` configuration is stored in `pinta.yaml`. This file should be saved i
             pardir: /pinta/par/dir/
             gptdir: /pinta/gpt/dir/
             rficconf: /pinta/rfic/dir/inpta_rficlean.flags
-            group: ugmrtpsr
+            group: pulsar
 
 - `pardir` is the directory where the pulsar ephemeris (par) files (named like J1234+5678.par) are stored. These files are needed for folding.
 - `gptdir` is the directory where the gptool configuration files (`gptool.in.*`) are stored. See `examples` directory for examples.
