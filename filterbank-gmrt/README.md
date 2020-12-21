@@ -6,7 +6,7 @@ I will clean up this distribution and remove code unnecessary for `pinta` later.
 
 # Usage
 
-  $ filterbank <raw_data_file> -mjd <starting_time> -rf <frequency> -nch {nchan} -bw {channelwidth} -ts {sampling_time} -df {sideband} > {output_file}
+    $ filterbank <raw_data_file> -mjd <starting_time> -rf <frequency> -nch {nchan} -bw {channelwidth} -ts {sampling_time} -df {sideband} > {output_file}
 
 `raw_data_file` is the path to the input file in GMRT raw data format.
 `starting_time` is the timestamp at the start of observation in MJD.
