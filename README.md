@@ -103,7 +103,7 @@ Each row in `pipeline.in` represents a raw data file. The columns are as follows
 1. JNAME - The J2000 of the pulsar (eg. J2124-3358)
 2. RawData - The raw data file name (not the full path)
 3. Timestamp - The timestamp file name (not the full path)
-4. Freq - The observation frequency (MHz)
+4. Freq - The local oscillator frequency (MHz)
 5. Nbin - The number of phase bins for folding
 6. Nchan - Number of frequency channels
 7. BandWidth - Observation bandwidth (MHz)
