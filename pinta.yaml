@@ -1,5 +1,5 @@
 pinta:
         pardir: /Data/bcj/INPTA/30june2018/gwbh7/parfilesinpta/
         gptdir: /misc/home/asusobhanan/Work/gptool_files/
-        rficconf: /home/ymaan/inpta_pipeline/inpta_rficlean.flags
+        rficconf: /home/ymaan/inpta_pipeline/inpta_rficlean_default.flags
         group: pulsar
