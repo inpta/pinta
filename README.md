@@ -3,7 +3,9 @@
 
 A detailed description of `pinta` is given in 
 Susobhanan et al., 2020 (https://arxiv.org/abs/2007.02930).
-If you use this pipeline in your research, please cite this paper.
+If you use this pipeline in your research, please cite this paper,
+along with the ones for the two RFI excision tools that `pinta` heavily
+make use of (`RFIClean`: https://arxiv.org/abs/2012.11630, `gptool`:to be updated).
 
 ## Installing
 
