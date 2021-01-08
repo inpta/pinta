@@ -3,7 +3,9 @@
 
 A detailed description of `pinta` is given in 
 Susobhanan et al., 2020 (https://arxiv.org/abs/2007.02930).
-If you use this pipeline in your research, please cite this paper.
+If you use this pipeline in your research, please cite this paper,
+along with those for the two RFI excision tools that `pinta` heavily
+make use of (`RFIClean`: https://arxiv.org/abs/2012.11630, `gptool`:to be updated).
 
 ## Installing
 
@@ -13,7 +15,7 @@ Install the following pulsar packages by following the installation instructions
 - tempo2 (https://bitbucket.org/psrsoft/tempo2/src/master/)
 - dspsr (http://dspsr.sourceforge.net/)
 - psrchive (http://psrchive.sourceforge.net/)
-- rfiClean (https://github.com/ymaan4/rfiClean)
+- RFIClean (https://github.com/ymaan4/RFIClean)
 - gptool
 
 Install the python dependencies.
@@ -66,7 +68,7 @@ The `pinta` configuration is stored in `pinta.yaml`. This file should be saved i
 
 - `pardir` is the directory where the pulsar ephemeris (par) files (named like J1234+5678.par) are stored. These files are needed for folding.
 - `gptdir` is the directory where the gptool configuration files (`gptool.in.*`) are stored. See `examples` directory for examples.
-- `rficconf` contains the flags to be passed to `rfiClean`. See `examples` directory for example.
+- `rficconf` contains the flags to be passed to `RFIClean`. See `examples` directory for example.
 - `group` is the user group which has permissions to run `pinta`.
 
 ### Running `pinta`
@@ -87,13 +89,13 @@ For each observation uGMRT produces two files - a binary raw data file and a tim
 - `--help` prints this syntax on the screen.
 - `--test` performs the input validation steps and prints out the commands without executing them. Used for debugging.
 - `--no-gptool` runs `pinta` without `gptool`.
-- `--no-rficlean` runs `pinta` without `rfiClean`.
+- `--no-rficlean` runs `pinta` without `RFIClean`.
 - `--nodel` keeps the intermediate data products.
 - `--retain-aux` keeps the auxiliary putput files produced by component programs.
 - `--log-to-file` writes the `stdout` to a log file.
 - `--gptdir` specifies a custom directory for `gptool.in` files. This is recommended.
 - `--pardir` specifies a custom directory for par files. 
-- `--rficconf` specifies a custom `rfiClean` configuration file. 
+- `--rficconf` specifies a custom `RFIClean` configuration file. 
 
 #### `pipeline.in` file
 
