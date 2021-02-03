@@ -47,7 +47,7 @@ For example, we will use the `pulsar` group name in this guide. The following co
 Say you want to install `pinta` in `/pinta/install/path/`. 
 
     $ git clone https://github.com/abhisrkckl/pinta.git
-    $ cp pinta/pinta pinta/pinta*.py pinta/pinta.yaml pinta/crp_rficlean_gm.sh /pinta/install/path/
+    $ cp pinta/pinta pinta/pinta*.py pinta/pinta.yaml /pinta/install/path/
     $ chgrp pulsar /pinta/inst/path/*
     $ chmod ug+r /pinta/inst/path/*
     $ chmod ug+x /pinta/inst/path/pinta
