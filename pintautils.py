@@ -124,7 +124,19 @@ def check_mkdir(dirname):
         print("[INFO] Creating directory", dirname)
         os.mkdir(dirname)
     
-aux_files_wcards = ["*.info", "*.gpt", "pdmp.*", 'gptool.in*']
+aux_files_wcards = [    "bandshape.gpt", 
+                        "benchmark_fillTime.gpt", 
+                        "benchmark.gpt", 
+                        "benchmark_readtime.gpt", 
+                        "benchmark_threadtime.gpt", 
+                        "benchmark_threadtime_indv.gpt",
+                        "log.gpt",
+                        "stats.gpt",
+                        "gptool.in",
+                        "gptool.in.oldver",
+                        "pdmp.per",
+                        "pdmp.posn",
+                        "*-ttemp-gm.info"  ]
 
 def move_aux_files(session, item):
     glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
