@@ -267,7 +267,7 @@ class PipelineItem:
         if self.f0psr <= 0:
             raise OSError("Could not read pulsar frequency from par file {}.".format(self.parfile))
             
-        self.nbin_nyquist = utils.find_nyquist_nbin(session, item)
+        self.nbin_nyquist = utils.find_nyquist_nbin(session, self)
     
     def desc(self):
         return '{}, MJD {}, {} MHz, {}'.format(self.jname, int(self.timestamp), self.intfreq, "CDP" if self.cohded else "PA")
