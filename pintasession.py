@@ -131,6 +131,13 @@ class Session:
         if self.run_gptool:
             for freq in [499,749,1459]:
                 tests.test_input_file("{}/gptool.in.{}".format(self.gptool_in_dir,freq))
+                
+        #= Checking whether to apply Nyquist binning ===================================================================
+        self.fold_nyquist_nbin = opts.get("--nyquist") is not None
+        if self.fold_nyquist_nbin:
+            print("[CONFIG] Will fold the data to Nyquist nbin in addition to the nbin given in pipeline.in file.")
+        else:
+            print("[CONFIG] Will not fold the data to Nyquist nbin.")
         
         #= Checking and reading pipeline.in ============================================================================
         self.pipeline_in_file = tests.test_input_file("%s/pipeline.in"%(self.working_dir))
