@@ -120,17 +120,17 @@ def run_filterbank(session, item, branch):
         
         print_exec_time(branch, program, stop_time-start_time)
 
-def run_dspsr(session, item, branch):
+def run_dspsr(session, item, branch, nyquist=False):
     program = 'dspsr'
-    exec_cmd(session, item, branch, program)
+    exec_cmd(session, item, branch, program, nyquist=nyquist)
         
-def run_pdmp(session, item, branch):
+def run_pdmp(session, item, branch, nyquist=False):
     program = 'pdmp'
-    exec_cmd(session, item, branch, program)
+    exec_cmd(session, item, branch, program, nyquist=nyquist)
     
-def run_ps2pdf(session, item, branch):
+def run_ps2pdf(session, item, branch, nyquist=False):
     program = 'ps2pdf'
-    exec_cmd(session, item, branch, program)
+    exec_cmd(session, item, branch, program, nyquist=nyquist)
 
 def run_rficlean(session, item, branch):
     #print("[INFO] Trying to make the rficlean-gmhdr file ...")
@@ -146,10 +146,17 @@ def norfix_branch(session, item):
     branch = 'norfix'
     run_filterbank(session, item, branch)
     run_dspsr(session, item, branch)
-    remove_tmp_file(session, item, branch, 'fil')
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
+    
+    if session.fold_nyquist_nbin:
+        run_dspsr(session, item, branch, nyquist=True)
+        run_pdmp(session, item, branch, nyquist=True)
+        run_ps2pdf(session, item, branch, nyquist=True)
+        remove_tmp_file(session, item, branch, 'nyq.summary.ps')
+    
+    remove_tmp_file(session, item, branch, 'fil')    
 
 def gptool_branch(session, item):
     branch = 'gptool'
@@ -157,19 +164,33 @@ def gptool_branch(session, item):
     run_filterbank(session, item, branch)
     remove_tmp_file(session, item, branch, 'gpt.dat')
     run_dspsr(session, item, branch)
-    remove_tmp_file(session, item, branch, 'fil')
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
+    
+    if session.fold_nyquist_nbin:
+        run_dspsr(session, item, branch, nyquist=True)
+        run_pdmp(session, item, branch, nyquist=True)
+        run_ps2pdf(session, item, branch, nyquist=True)
+        remove_tmp_file(session, item, branch, 'nyq.summary.ps')
+    
+    remove_tmp_file(session, item, branch, 'fil')
 
 def rficlean_branch(session, item):
     branch = 'rfiClean'
     run_rficlean(session, item, branch)
     run_dspsr(session, item, branch)
-    remove_tmp_file(session, item, branch, 'fil')
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
+    
+    if session.fold_nyquist_nbin:
+        run_dspsr(session, item, branch, nyquist=True)
+        run_pdmp(session, item, branch, nyquist=True)
+        run_ps2pdf(session, item, branch, nyquist=True)
+        remove_tmp_file(session, item, branch, 'nyq.summary.ps')
+    
+    remove_tmp_file(session, item, branch, 'fil')
 
 def setup_input_ln(session, item):
     if not session.samedir:
