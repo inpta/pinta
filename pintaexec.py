@@ -34,6 +34,9 @@ def exec_cmd(session, item, branch, program):
         ## now use absolute delta-freq. instead of Fourier-bins (whose width can change with tsamp,block-size)
         cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfdf 8.0 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, item.f0psr, os.path.basename(item.timestampfile))
         #cmd_split = ["crp_rficlean_gm.sh", fil_file, session.rfic_conf_file, str(Nprocess), item.rawdatafile, rfic_hdrfilename, rficlean_flags]
+    elif program == 'ps2pdf':
+        summary_file = output_file_name(session, item, branch, 'summary.ps')
+        cmd = "ps2pdf {}".format(summary_file)
     
     print("[CMD]", cmd)
     
@@ -109,6 +112,10 @@ def run_dspsr(session, item, branch):
 def run_pdmp(session, item, branch):
     program = 'pdmp'
     exec_cmd(session, item, branch, program)
+    
+def run_ps2pdf(session, item, branch):
+    program = 'ps2pdf'
+    exec_cmd(session, item, branch, program)
 
 def run_rficlean(session, item, branch):
     #print("[INFO] Trying to make the rficlean-gmhdr file ...")
@@ -126,6 +133,8 @@ def norfix_branch(session, item):
     run_dspsr(session, item, branch)
     remove_tmp_file(session, item, branch, 'fil')
     run_pdmp(session, item, branch)
+    run_ps2pdf(session, item, branch)
+    remove_tmp_file(session, item, branch, 'summary.ps')
 
 def gptool_branch(session, item):
     branch = 'gptool'
@@ -135,6 +144,8 @@ def gptool_branch(session, item):
     run_dspsr(session, item, branch)
     remove_tmp_file(session, item, branch, 'fil')
     run_pdmp(session, item, branch)
+    run_ps2pdf(session, item, branch)
+    remove_tmp_file(session, item, branch, 'summary.ps')
 
 def rficlean_branch(session, item):
     branch = 'rfiClean'
@@ -142,6 +153,8 @@ def rficlean_branch(session, item):
     run_dspsr(session, item, branch)
     remove_tmp_file(session, item, branch, 'fil')
     run_pdmp(session, item, branch)
+    run_ps2pdf(session, item, branch)
+    remove_tmp_file(session, item, branch, 'summary.ps')
 
 def setup_input_ln(session, item):
     if not session.samedir:
