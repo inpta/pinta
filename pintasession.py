@@ -22,7 +22,7 @@ class Session:
         
         #= Parsing command line ========================================================================================
         cmdargs = sys.argv[1:]
-        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file"])
+        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file", "nyquist"])
         opts = dict(opts)
         
         #= Displaying help =============================================================================================
