@@ -4,7 +4,10 @@ import time
 import pintautils as utils
 import sys
 
-def exec_cmd(session, item, branch, program):
+def exec_cmd(session, item, branch, program, nyquist=False):
+
+    # nyquist option is valid for dspsr, pdmp and ps2pdf.
+
     outfile = log_file_name(session, item, branch, program, 'out')
     errfile = log_file_name(session, item, branch, program, 'err')
     
@@ -17,15 +20,24 @@ def exec_cmd(session, item, branch, program):
         #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
     elif program == 'dspsr':
         fil_file = output_file_name(session, item, branch, 'fil')
-        #fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
-        fits_file_prefix = "./{}.{}".format(item.output_root, branch)
-        cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
-        #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        if not nyquist:
+            #fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
+            fits_file_prefix = "./{}.{}".format(item.output_root, branch)
+            cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
+            #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        else:
+            fits_file_prefix = "./{}.{}.nyq".format(item.output_root, branch)
+            cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin_nyquist, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
     elif program == 'pdmp':
-        fits_file = output_file_name(session, item, branch, 'fits')
-        summary_file = output_file_name(session, item, branch, 'summary.ps')
-        cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
-        #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        if not nyquist:
+            fits_file = output_file_name(session, item, branch, 'fits')
+            summary_file = output_file_name(session, item, branch, 'summary.ps')
+            cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
+            #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        else:
+            fits_file = output_file_name(session, item, branch, 'nyq.fits')
+            summary_file = output_file_name(session, item, branch, 'nyq.summary.ps')
+            cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
     elif branch == 'rfiClean' and program == 'rfiClean':
         fil_file = output_file_name(session, item, branch, 'fil')
         #rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
@@ -35,9 +47,12 @@ def exec_cmd(session, item, branch, program):
         cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfdf 8.0 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, item.f0psr, os.path.basename(item.timestampfile))
         #cmd_split = ["crp_rficlean_gm.sh", fil_file, session.rfic_conf_file, str(Nprocess), item.rawdatafile, rfic_hdrfilename, rficlean_flags]
     elif program == 'ps2pdf':
-        summary_file = output_file_name(session, item, branch, 'summary.ps')
-        cmd = "ps2pdf {}".format(summary_file)
-    
+        if not nyquist:
+            summary_file = output_file_name(session, item, branch, 'summary.ps')
+            cmd = "ps2pdf {}".format(summary_file)
+        else:
+            summary_file = output_file_name(session, item, branch, 'nyq.summary.ps')
+            cmd = "ps2pdf {}".format(summary_file)
     print("[CMD]", cmd)
     
     #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
