@@ -136,7 +136,7 @@ aux_files_wcards = [    "bandshape.gpt",
                         "gptool.in.oldver",
                         "pdmp.per",
                         "pdmp.posn",
-                        "*-ttemp-gm.info"  ]
+                        "*-ttemp-gm.info" ]
 
 def move_aux_files(session, item):
     glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
