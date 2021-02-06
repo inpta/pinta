@@ -126,6 +126,16 @@ def run_filterbank(session, item, branch):
 def run_dspsr(session, item, branch, xnbin=False):
     program = 'dspsr'
     exec_cmd(session, item, branch, program, xnbin=xnbin)
+    
+    # Checking if output file is created
+    if not xnbin:
+        fits_file = "./" + output_file_name(session, item, branch, 'fits')
+    else:
+        fits_file = "./" + output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
+    
+    if not os.access(fits_file, os.F_OK):
+        print("[ERROR] dspsr failed to create file {} ... Quitting...".format(fits_file))
+        raise OSError
         
 def run_pdmp(session, item, branch, xnbin=False):
     program = 'pdmp'
