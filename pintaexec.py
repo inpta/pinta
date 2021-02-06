@@ -8,8 +8,8 @@ def exec_cmd(session, item, branch, program, xnbin=False):
 
     # xnbin option is valid for dspsr, pdmp and ps2pdf.
 
-    outfile = log_file_name(session, item, branch, program, 'out')
-    errfile = log_file_name(session, item, branch, program, 'err')
+    outfile = log_file_name(session, item, branch, program, 'out', xnbin)
+    errfile = log_file_name(session, item, branch, program, 'err', xnbin)
     
     print("[LOG] {}/{} stdout will be written to {}".format(branch, program, outfile))
     print("[LOG] {}/{} stderr will be written to {}".format(branch, program, errfile))
@@ -78,8 +78,11 @@ def output_file_name(session, item, branch, ext):
     #return "{}/{}.{}.{}".format(session.working_dir, item.output_root, branch, ext)
     return "{}/{}.{}.{}".format('.', item.output_root, branch, ext)
 
-def log_file_name(session, item, branch, program, dev):
-    return "{}/{}.{}.{}".format(item.logdir, program, branch, dev)
+def log_file_name(session, item, branch, program, dev, xnbin=False):
+    if not xnbin:
+        return "{}/{}.{}.{}".format(item.logdir, program, branch, dev)
+    else:
+        return "{}/{}.{}.xnbin.{}".format(item.logdir, program, branch, dev)
 
 def print_exec_time(branch, program, exectime):
     print("[TIME] Execution time for {}/{} = {} s".format(branch, program, exectime))
