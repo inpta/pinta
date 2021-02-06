@@ -162,5 +162,5 @@ def find_nyquist_nbin(session, item):
     F0 = item.f0psr
     Tsmpl = item.tsmpl
     nbin_nyq = 2**( int(np.log2( 1/(Tsmpl*F0) )) )
-    print ("[INFO] Nyquist nbin =  %d"%nbin_nyq)
+    print ("[INFO] Default NBin =  %d"%nbin_nyq)
     return nbin_nyq
