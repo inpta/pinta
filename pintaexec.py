@@ -26,17 +26,17 @@ def exec_cmd(session, item, branch, program, xnbin=False):
             cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
-            fits_file_prefix = "./{}.{}.nyq".format(item.output_root, branch)
+            fits_file_prefix = "./{}.{}.xnbin".format(item.output_root, branch)
             cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin*item.xnbinfac, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
     elif program == 'pdmp':
-        if not nyquist:
+        if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
             summary_file = output_file_name(session, item, branch, 'summary.ps')
             cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
-            fits_file = output_file_name(session, item, branch, 'nyq.fits')
-            summary_file = output_file_name(session, item, branch, 'nyq.summary.ps')
+            fits_file = output_file_name(session, item, branch, 'xnbin.fits')
+            summary_file = output_file_name(session, item, branch, 'xnbin.summary.ps')
             cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
     elif branch == 'rfiClean' and program == 'rfiClean':
         fil_file = output_file_name(session, item, branch, 'fil')
@@ -47,11 +47,11 @@ def exec_cmd(session, item, branch, program, xnbin=False):
         cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfdf 8.0 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, item.f0psr, os.path.basename(item.timestampfile))
         #cmd_split = ["crp_rficlean_gm.sh", fil_file, session.rfic_conf_file, str(Nprocess), item.rawdatafile, rfic_hdrfilename, rficlean_flags]
     elif program == 'ps2pdf':
-        if not nyquist:
+        if not xnbin:
             summary_file = output_file_name(session, item, branch, 'summary.ps')
             cmd = "ps2pdf {}".format(summary_file)
         else:
-            summary_file = output_file_name(session, item, branch, 'nyq.summary.ps')
+            summary_file = output_file_name(session, item, branch, 'xnbin.summary.ps')
             cmd = "ps2pdf {}".format(summary_file)
     print("[CMD]", cmd)
     
@@ -120,17 +120,17 @@ def run_filterbank(session, item, branch):
         
         print_exec_time(branch, program, stop_time-start_time)
 
-def run_dspsr(session, item, branch, nyquist=False):
+def run_dspsr(session, item, branch, xnbin=False):
     program = 'dspsr'
-    exec_cmd(session, item, branch, program, nyquist=nyquist)
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
         
-def run_pdmp(session, item, branch, nyquist=False):
+def run_pdmp(session, item, branch, xnbin=False):
     program = 'pdmp'
-    exec_cmd(session, item, branch, program, nyquist=nyquist)
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
     
-def run_ps2pdf(session, item, branch, nyquist=False):
+def run_ps2pdf(session, item, branch, xnbin=False):
     program = 'ps2pdf'
-    exec_cmd(session, item, branch, program, nyquist=nyquist)
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
 
 def run_rficlean(session, item, branch):
     #print("[INFO] Trying to make the rficlean-gmhdr file ...")
@@ -151,10 +151,10 @@ def norfix_branch(session, item):
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
-        run_dspsr(session, item, branch, nyquist=True)
-        run_pdmp(session, item, branch, nyquist=True)
-        run_ps2pdf(session, item, branch, nyquist=True)
-        remove_tmp_file(session, item, branch, 'nyq.summary.ps')
+        run_dspsr(session, item, branch, xnbin=True)
+        run_pdmp(session, item, branch, xnbin=True)
+        run_ps2pdf(session, item, branch, xnbin=True)
+        remove_tmp_file(session, item, branch, 'xnbin.summary.ps')
     
     remove_tmp_file(session, item, branch, 'fil')    
 
@@ -169,10 +169,10 @@ def gptool_branch(session, item):
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
-        run_dspsr(session, item, branch, nyquist=True)
-        run_pdmp(session, item, branch, nyquist=True)
-        run_ps2pdf(session, item, branch, nyquist=True)
-        remove_tmp_file(session, item, branch, 'nyq.summary.ps')
+        run_dspsr(session, item, branch, xnbin=True)
+        run_pdmp(session, item, branch, xnbin=True)
+        run_ps2pdf(session, item, branch, xnbin=True)
+        remove_tmp_file(session, item, branch, 'xnbin.summary.ps')
     
     remove_tmp_file(session, item, branch, 'fil')
 
@@ -185,10 +185,10 @@ def rficlean_branch(session, item):
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
-        run_dspsr(session, item, branch, nyquist=True)
-        run_pdmp(session, item, branch, nyquist=True)
-        run_ps2pdf(session, item, branch, nyquist=True)
-        remove_tmp_file(session, item, branch, 'nyq.summary.ps')
+        run_dspsr(session, item, branch, xnbin=True)
+        run_pdmp(session, item, branch, xnbin=True)
+        run_ps2pdf(session, item, branch, xnbin=True)
+        remove_tmp_file(session, item, branch, 'xnbin.summary.ps')
     
     remove_tmp_file(session, item, branch, 'fil')
 
