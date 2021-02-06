@@ -4,9 +4,9 @@ import time
 import pintautils as utils
 import sys
 
-def exec_cmd(session, item, branch, program, nyquist=False):
+def exec_cmd(session, item, branch, program, xnbin=False):
 
-    # nyquist option is valid for dspsr, pdmp and ps2pdf.
+    # xnbin option is valid for dspsr, pdmp and ps2pdf.
 
     outfile = log_file_name(session, item, branch, program, 'out')
     errfile = log_file_name(session, item, branch, program, 'err')
@@ -20,14 +20,14 @@ def exec_cmd(session, item, branch, program, nyquist=False):
         #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
     elif program == 'dspsr':
         fil_file = output_file_name(session, item, branch, 'fil')
-        if not nyquist:
+        if not xnbin:
             #fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
             fits_file_prefix = "./{}.{}".format(item.output_root, branch)
             cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
             fits_file_prefix = "./{}.{}.nyq".format(item.output_root, branch)
-            cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin_nyquist, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
+            cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin*item.xnbinfac, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
     elif program == 'pdmp':
         if not nyquist:
             fits_file = output_file_name(session, item, branch, 'fits')
@@ -150,7 +150,7 @@ def norfix_branch(session, item):
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
-    if session.fold_nyquist_nbin:
+    if session.fold_extra_nbin:
         run_dspsr(session, item, branch, nyquist=True)
         run_pdmp(session, item, branch, nyquist=True)
         run_ps2pdf(session, item, branch, nyquist=True)
@@ -168,7 +168,7 @@ def gptool_branch(session, item):
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
-    if session.fold_nyquist_nbin:
+    if session.fold_extra_nbin:
         run_dspsr(session, item, branch, nyquist=True)
         run_pdmp(session, item, branch, nyquist=True)
         run_ps2pdf(session, item, branch, nyquist=True)
@@ -184,7 +184,7 @@ def rficlean_branch(session, item):
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
-    if session.fold_nyquist_nbin:
+    if session.fold_extra_nbin:
         run_dspsr(session, item, branch, nyquist=True)
         run_pdmp(session, item, branch, nyquist=True)
         run_ps2pdf(session, item, branch, nyquist=True)
