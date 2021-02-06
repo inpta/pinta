@@ -22,7 +22,7 @@ class Session:
         
         #= Parsing command line ========================================================================================
         cmdargs = sys.argv[1:]
-        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file", "nyquist"])
+        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file", "xnbin="])
         opts = dict(opts)
         
         #= Displaying help =============================================================================================
@@ -132,12 +132,14 @@ class Session:
             for freq in [499,749,1459]:
                 tests.test_input_file("{}/gptool.in.{}".format(self.gptool_in_dir,freq))
                 
-        #= Checking whether to apply Nyquist binning ===================================================================
-        self.fold_nyquist_nbin = opts.get("--nyquist") is not None
-        if self.fold_nyquist_nbin:
-            print("[CONFIG] Will fold the data to Nyquist nbin in addition to the nbin given in pipeline.in file.")
+        #= Checking whether to apply extra binning =====================================================================
+        self.fold_extra_nbin = opts.get("--xnbin") is not None 
+        self.xnbinfac = opts.get("--xnbin")
+        if self.fold_extra_nbin:
+            print("[CONFIG] Will fold the data to {}*NBin bins in addition to the NBin given in pipeline.in file.".format(self.xnbinfac))
         else:
-            print("[CONFIG] Will not fold the data to Nyquist nbin.")
+            pass
+            #print("[CONFIG] Will not fold the data to Nyquist nbin.")
         
         #= Checking and reading pipeline.in ============================================================================
         self.pipeline_in_file = tests.test_input_file("%s/pipeline.in"%(self.working_dir))
