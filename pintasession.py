@@ -134,8 +134,8 @@ class Session:
                 
         #= Checking whether to apply extra binning =====================================================================
         self.fold_extra_nbin = opts.get("--xnbin") is not None 
-        self.xnbinfac = int(opts.get("--xnbin"))
         if self.fold_extra_nbin:
+            self.xnbinfac = int(opts.get("--xnbin"))
             print("[CONFIG] Will fold the data to {}*NBin bins in addition to the NBin given in pipeline.in file.".format(self.xnbinfac))
         else:
             pass
