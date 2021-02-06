@@ -26,7 +26,7 @@ def exec_cmd(session, item, branch, program, xnbin=False):
             cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
-            fits_file_prefix = "./{}.{}.xnbin".format(item.output_root, branch)
+            fits_file_prefix = "./{}.{}.xNBin".format(item.output_root, branch)
             cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, int(item.nbin*session.xnbinfac), item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
     elif program == 'pdmp':
         if not xnbin:
@@ -35,8 +35,8 @@ def exec_cmd(session, item, branch, program, xnbin=False):
             cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
-            fits_file = output_file_name(session, item, branch, 'xnbin.fits')
-            summary_file = output_file_name(session, item, branch, 'xnbin.summary.ps')
+            fits_file = output_file_name(session, item, branch, 'xNBin.fits')
+            summary_file = output_file_name(session, item, branch, 'xNBin.summary.ps')
             cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
     elif branch == 'rfiClean' and program == 'rfiClean':
         fil_file = output_file_name(session, item, branch, 'fil')
@@ -51,7 +51,7 @@ def exec_cmd(session, item, branch, program, xnbin=False):
             summary_file = output_file_name(session, item, branch, 'summary.ps')
             cmd = "ps2pdf {}".format(summary_file)
         else:
-            summary_file = output_file_name(session, item, branch, 'xnbin.summary.ps')
+            summary_file = output_file_name(session, item, branch, 'xNBin.summary.ps')
             cmd = "ps2pdf {}".format(summary_file)
     print("[CMD]", cmd)
     
@@ -82,7 +82,7 @@ def log_file_name(session, item, branch, program, dev, xnbin=False):
     if not xnbin:
         return "{}/{}.{}.{}".format(item.logdir, program, branch, dev)
     else:
-        return "{}/{}.{}.xnbin.{}".format(item.logdir, program, branch, dev)
+        return "{}/{}.{}.xNBin.{}".format(item.logdir, program, branch, dev)
 
 def print_exec_time(branch, program, exectime):
     print("[TIME] Execution time for {}/{} = {} s".format(branch, program, exectime))
@@ -157,7 +157,7 @@ def norfix_branch(session, item):
         run_dspsr(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
-        remove_tmp_file(session, item, branch, 'xnbin.summary.ps')
+        remove_tmp_file(session, item, branch, 'xNBin.summary.ps')
     
     remove_tmp_file(session, item, branch, 'fil')    
 
@@ -175,7 +175,7 @@ def gptool_branch(session, item):
         run_dspsr(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
-        remove_tmp_file(session, item, branch, 'xnbin.summary.ps')
+        remove_tmp_file(session, item, branch, 'xNBin.summary.ps')
     
     remove_tmp_file(session, item, branch, 'fil')
 
@@ -191,7 +191,7 @@ def rficlean_branch(session, item):
         run_dspsr(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
-        remove_tmp_file(session, item, branch, 'xnbin.summary.ps')
+        remove_tmp_file(session, item, branch, 'xNBin.summary.ps')
     
     remove_tmp_file(session, item, branch, 'fil')
 
