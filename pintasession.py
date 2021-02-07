@@ -98,6 +98,7 @@ class Session:
                 print("[CONFIG] gptool.in directory provided in command line.")
                 self.gptool_in_dir = tests.test_read_dir( os.path.realpath( opts.get("--gptdir") ) )
             else:
+                print("[CONFIG]" + "\033[91m" + " gptool.in directory NOT provided. The default may not be optimal for this dataset." + "\033[0m")
                 self.gptool_in_dir = tests.test_read_dir( os.path.realpath( config['pinta']['gptdir'] ) )
         
         if self.run_rficlean:
