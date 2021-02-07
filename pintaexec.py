@@ -28,6 +28,13 @@ def exec_cmd(session, item, branch, program, xnbin=False):
         else:
             fits_file_prefix = "./{}.{}.{}xNBin".format(item.output_root, branch, session.xnbinfac)
             cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, int(item.nbin*session.xnbinfac), item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
+    elif program == 'psredit':
+        if not xnbin:
+            fits_file = output_file_name(session, item, branch, 'fits')
+            cmd = "psredit -c be:name=GWB -m {}".format(fits_file)
+        else:
+            fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
+            cmd = "psredit -c be:name=GWB -m {}".format(fits_file)
     elif program == 'pdmp':
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
@@ -53,9 +60,8 @@ def exec_cmd(session, item, branch, program, xnbin=False):
         else:
             summary_file = output_file_name(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
             cmd = "ps2pdf {}".format(summary_file)
-    print("[CMD]", cmd)
     
-    #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+    print("[CMD]", cmd)
      
     try:
         if not session.test_mode:
@@ -136,7 +142,13 @@ def run_dspsr(session, item, branch, xnbin=False):
     if not os.access(fits_file, os.F_OK):
         print("[ERROR] dspsr failed to create file {} ... Quitting...".format(fits_file))
         raise OSError
-        
+
+
+def run_psredit(session, item, branch, xnbin=False):
+    program = 'psredit'
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
+
+
 def run_pdmp(session, item, branch, xnbin=False):
     program = 'pdmp'
     exec_cmd(session, item, branch, program, xnbin=xnbin)
