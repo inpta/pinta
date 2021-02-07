@@ -1,0 +1,9 @@
+07 Feb 2021
+===========
+1. Update the 'be:name' field of the Timer output files as 'GWB'.
+2. Fine tuned the files deleted to ensure that only files created by pinta are removed.
+3. Create an summary file (pinta_summary.txt) containing the pdmp DM and SNR of each output file.
+4. Convert the summary PS files to PDF format.
+5. Default NBin value can be accessed by using NBin=-1 in the pipeline.in file (Power of 2 closest to and less than P0/Tsmpl).
+6. '--xnbin <x>' option to fold the data to x*NBin bins in addition to NBin bins.
+7. Check if dspsr has created the folded profile archive.
