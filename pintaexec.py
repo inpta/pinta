@@ -189,12 +189,14 @@ def gptool_branch(session, item):
     run_filterbank(session, item, branch)
     remove_tmp_file(session, item, branch, 'gpt.dat')
     run_dspsr(session, item, branch)
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
@@ -205,12 +207,14 @@ def rficlean_branch(session, item):
     branch = 'rfiClean'
     run_rficlean(session, item, branch)
     run_dspsr(session, item, branch)
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
