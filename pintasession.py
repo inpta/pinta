@@ -239,10 +239,6 @@ class PipelineItem:
         
         self.nbin = int(pipeline_in_row[4])
         
-        # Default binning
-        if self.nbin == -1:
-            self.nbin = utils.find_nyquist_nbin(session, self)
-        
         self.nchan = int(pipeline_in_row[5])
         self.bandwidth = float(pipeline_in_row[6])
         self.chanwidth = -self.bandwidth/self.nchan
@@ -279,6 +275,10 @@ class PipelineItem:
         self.f0psr = utils.fetch_f0(self.parfile)
         if self.f0psr <= 0:
             raise OSError("Could not read pulsar frequency from par file {}.".format(self.parfile))
+            
+        # Default binning
+        if self.nbin == -1:
+            self.nbin = utils.find_nyquist_nbin(session, self)
         
     
     def desc(self):
