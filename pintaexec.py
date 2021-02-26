@@ -27,7 +27,7 @@ def exec_cmd(session, item, branch, program, xnbin=False):
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
             fits_file_prefix = "./{}.{}.{}xNBin".format(item.output_root, branch, session.xnbinfac)
-            cmd = "dspsr -t 4 -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, int(item.nbin*session.xnbinfac), item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
+            cmd = "dspsr -t 8 -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, int(item.nbin*session.xnbinfac), item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
     elif program == 'psredit':
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
