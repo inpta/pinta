@@ -118,7 +118,9 @@ def run_filterbank(session, item, branch):
         filterbank_in_file = './' + os.path.basename(item.rawdatafile)
     
     fil_file = output_file_name(session, item, branch, 'fil')
-    cmd = "filterbank {} -mjd {} -rf {} -nch {} -bw {} -ts {} -df {} > {}".format(filterbank_in_file, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband_code, fil_file)
+    #cmd = "filterbank {} -mjd {} -rf {} -nch {} -bw {} -ts {} -df {} > {}".format(filterbank_in_file, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband_code, fil_file)
+    sideband_opt = "-u" if item.sideband=='USB' else ''
+    cmd = "ugmrt2fil -i {} -o {} -j {} -d {} -f {} -c {} -w {} -t {} {}".format(filterbank_in_file, fil_file, item.jname, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, sideband_opt)
     
     print("[CMD]", cmd)
     
