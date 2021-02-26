@@ -119,7 +119,7 @@ class Session:
         
         #= Checking if all required programs are present ===============================================================
         #program_list = ['gptool','dspsr','filterbank','tempo2','pdmp','crp_rficlean_gm.sh']
-        program_list = ['dspsr','filterbank','tempo2','pdmp']
+        program_list = ['dspsr','ugmrt2fil','tempo2','pdmp']
         if self.run_gptool:
             program_list += ['gptool']
         if self.run_rficlean:
