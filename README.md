@@ -16,7 +16,7 @@ Install the following pulsar packages by following the installation instructions
 - dspsr (http://dspsr.sourceforge.net/)
 - psrchive (http://psrchive.sourceforge.net/)
 - RFIClean (https://github.com/ymaan4/RFIClean)
-- gptool
+- gptool (https://github.com/chowdhuryaditya/gptool)
 
 Install the python dependencies.
 
