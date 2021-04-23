@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6
+#!/usr/bin/python3
 
 """ Generate and execute commands to reduce the raw uGMRT data into TIMER format.
 
