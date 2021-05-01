@@ -141,7 +141,7 @@ def run_dspsr(session, item, branch, xnbin=False):
     else:
         fits_file = "./" + output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
     
-    if not os.access(fits_file, os.F_OK):
+    if not os.access(fits_file, os.F_OK) and not session.test_mode:
         print("[ERROR] dspsr failed to create file {} ... Quitting...".format(fits_file))
         raise OSError
 
