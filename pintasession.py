@@ -11,7 +11,7 @@ import socket
 import pintatests as tests
 import pintautils as utils
 
-helpmsg = "Usage:\npinta.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
+helpmsg = "Usage:\npinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
 
 class Session:
     """  
