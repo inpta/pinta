@@ -191,7 +191,7 @@ class Session:
         self.lockfile = "{}/{}".format(self.working_dir, 'pinta.lock')
         if os.access(self.lockfile, os.F_OK):
             print("[ERROR] Another instance of pinta seems to be running on this directory.")
-            print("[ERROR] *IMPORTANT* If you are /sure/ this is a mistake, please remove pinta.lock manualy and try again. DOING THIS MAY CORRUPT THE DATA.")
+            print("[ERROR] *IMPORTANT* If you are /sure/ this is a mistake, please remove pinta.lock manually and try again. DOING THIS MAY CORRUPT THE DATA.")
             self.lockfail = True
             raise OSError()
         else:
