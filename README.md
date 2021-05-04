@@ -17,21 +17,11 @@ Install the following pulsar packages by following the installation instructions
 - psrchive (http://psrchive.sourceforge.net/)
 - RFIClean (https://github.com/ymaan4/RFIClean)
 - gptool (https://github.com/chowdhuryaditya/gptool)
+- ugmrt2fil (https://github.com/abhisrkckl/ugmrt2fil)
 
 Install the python dependencies.
 
     $ pip3 install parse astropy pyyaml --user
-
-### Installing `filterbank-gmrt`
-
-    $ cd filterbank-gmrt
-    $ ./configure
-
-This script will ask for a directory where the executable will be created. Enter an appropriate path.
-Note that the `filterbank` executable must be in `$PATH` for `pinta` to work. 
- 
-    $ make filterbank
-    $ cd ..
 
 ### Permissions
 
