@@ -2,10 +2,10 @@
 `pinta` is a data analysis pipeline for upgraded GMRT pulsar data. It RFI mitigates and folds uGMRT data to form Timer archives. 
 
 A detailed description of `pinta` is given in 
-Susobhanan et al., 2020 (https://arxiv.org/abs/2007.02930).
+Susobhanan et al., 2020 (https://doi.org/10.1017/pasa.2021.12).
 If you use this pipeline in your research, please cite this paper,
 along with those for the two RFI excision tools that `pinta` heavily
-make use of (`RFIClean`: https://arxiv.org/abs/2012.11630, `gptool`:to be updated).
+make use of (`RFIClean`: https://doi.org/10.1051/0004-6361/202040164, `gptool`:to be updated).
 
 ## Installing
 
