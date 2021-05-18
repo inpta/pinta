@@ -96,7 +96,7 @@ Each row in `pipeline.in` represents a raw data file. The columns are as follows
 2. RawData - The raw data file name (not the full path)
 3. Timestamp - The timestamp file name (not the full path)
 4. Freq - The local oscillator frequency (MHz)
-5. Nbin - The number of phase bins for folding
+5. Nbin - The number of phase bins for folding (Set to -1 to use the default. The default is the largest power of 2 less than psr_period/Tsmpl.)
 6. Nchan - Number of frequency channels
 7. BandWidth - Observation bandwidth (MHz)
 8. TSmpl - Sampling time of observation (s)
