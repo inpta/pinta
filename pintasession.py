@@ -11,7 +11,7 @@ import socket
 import pintatests as tests
 import pintautils as utils
 
-helpmsg = "Usage:\npinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
+helpmsg = "Usage:\npinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--auto-gptin] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
 
 class Session:
     """  
@@ -100,6 +100,8 @@ class Session:
             else:
                 print("[CONFIG]" + "\033[91m" + " gptool.in directory NOT provided. The default may not be optimal for this dataset." + "\033[0m")
                 self.gptool_in_dir = tests.test_read_dir( os.path.realpath( config['pinta']['gptdir'] ) )
+            
+            self.auto_gptin = opts.get("--auto-gptin") is not None
         
         if self.run_rficlean:
             if opts.get("--rficconf") is not None:

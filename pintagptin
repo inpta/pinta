@@ -1,0 +1,67 @@
+#!env python3
+
+import sys
+
+from pintagptin import create_gptin_file
+
+"""  
+    Command line usage:
+        $ pintagptin <template_file> <output_file> <BM> <Npol> <Nbits> <FreqLO> <BW> <SB> <Nchan> <Tsmpl> <Jname> <P0> <DM>
+"""
+
+if len(sys.argv) != 14:
+    raise ValueError("Invalid number of arguments")
+    
+template_filename = sys.argv[1]
+output_filename   = sys.argv[2]
+
+if sys.argv[3] in ("IA", "PA"):
+    beam_mode = sys.argv[3]
+else:
+    raise ValueError("Invalid beam mode given.")    
+
+if int(sys.argv[4]) == 1:
+    pol = 0
+elif int(sys.argv[4]) == 4:
+    pol = 1
+else:
+    raise ValueError("Invalid Npol given.")
+
+if int(sys.argv[5]) in (8, 16):
+    Nbytes = int(sys.argv[5])/8
+else:
+    raise ValueError("Invalid Nbits given.")
+
+FreqLO = float(sys.argv[6])
+BW     = float(sys.argv[7])
+
+if sys.argv[8] == "LSB":
+    SB = -1
+    Fmin = FreqLO - BW
+elif sys.argv[8] == "USB":
+    SB = 1
+    Fmin = FreqLO
+else:
+    raise ValueError("Invalid SB given.")
+    
+Nchan = int(sys.argv[9])
+Tsmpl = float(sys.argv[10])
+
+Jname = sys.argv[11]
+P0    = float(sys.argv[12])
+DM    = float(sys.argv[13])
+
+gptin_opts = dict(  BM      = beam_mode,
+                    pol     = pol,
+                    Nbytes  = Nbytes,
+                    Fmin    = Fmin,
+                    BW      = BW,
+                    SB      = SB,
+                    Nchan   = Nchan,
+                    Tsmpl   = Tsmpl,
+                    JNAME   = Jname,
+                    P0      = P0,
+                    DM      = DM,    
+)
+
+create_gptin_file(template_file, gptin_opts, output_filename)
