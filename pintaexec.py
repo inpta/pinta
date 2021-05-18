@@ -4,9 +4,12 @@ import time
 import pintautils as utils
 import sys
 
-def exec_cmd(session, item, branch, program):
-    outfile = log_file_name(session, item, branch, program, 'out')
-    errfile = log_file_name(session, item, branch, program, 'err')
+def exec_cmd(session, item, branch, program, xnbin=False):
+
+    # xnbin option is valid for dspsr, pdmp and ps2pdf.
+
+    outfile = log_file_name(session, item, branch, program, 'out', xnbin)
+    errfile = log_file_name(session, item, branch, program, 'err', xnbin)
     
     print("[LOG] {}/{} stdout will be written to {}".format(branch, program, outfile))
     print("[LOG] {}/{} stderr will be written to {}".format(branch, program, errfile))
@@ -17,15 +20,31 @@ def exec_cmd(session, item, branch, program):
         #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
     elif program == 'dspsr':
         fil_file = output_file_name(session, item, branch, 'fil')
-        #fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
-        fits_file_prefix = "./{}.{}".format(item.output_root, branch)
-        cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
-        #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        if not xnbin:
+            #fits_file_prefix = "{}/{}.{}".format(session.working_dir, item.output_root, branch)
+            fits_file_prefix = "./{}.{}".format(item.output_root, branch)
+            cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, item.nbin, item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
+            #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        else:
+            fits_file_prefix = "./{}.{}.{}xNBin".format(item.output_root, branch, session.xnbinfac)
+            cmd = "dspsr -N {} -d {} -b {} -E {} -L {} -m {} -A {} -O {} -e fits".format(item.jname, item.npol, int(item.nbin*session.xnbinfac), item.parfile, item.tsubint, item.timestamp, fil_file, fits_file_prefix)
+    elif program == 'psredit':
+        if not xnbin:
+            fits_file = output_file_name(session, item, branch, 'fits')
+            cmd = "psredit -c name={},be:name=GWB -m {}".format(item.jname,fits_file)
+        else:
+            fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
+            cmd = "psredit -c name={},be:name=GWB -m {}".format(item.jname,fits_file)
     elif program == 'pdmp':
-        fits_file = output_file_name(session, item, branch, 'fits')
-        summary_file = output_file_name(session, item, branch, 'summary.ps')
-        cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
-        #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        if not xnbin:
+            fits_file = output_file_name(session, item, branch, 'fits')
+            summary_file = output_file_name(session, item, branch, 'summary.ps')
+            cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
+            #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
+        else:
+            fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
+            summary_file = output_file_name(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
+            cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
     elif branch == 'rfiClean' and program == 'rfiClean':
         fil_file = output_file_name(session, item, branch, 'fil')
         #rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
@@ -34,10 +53,15 @@ def exec_cmd(session, item, branch, program):
         ## now use absolute delta-freq. instead of Fourier-bins (whose width can change with tsamp,block-size)
         cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfdf 8.0 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, item.f0psr, os.path.basename(item.timestampfile))
         #cmd_split = ["crp_rficlean_gm.sh", fil_file, session.rfic_conf_file, str(Nprocess), item.rawdatafile, rfic_hdrfilename, rficlean_flags]
+    elif program == 'ps2pdf':
+        if not xnbin:
+            summary_file = output_file_name(session, item, branch, 'summary.ps')
+            cmd = "ps2pdf {}".format(summary_file)
+        else:
+            summary_file = output_file_name(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
+            cmd = "ps2pdf {}".format(summary_file)
     
     print("[CMD]", cmd)
-    
-    #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
      
     try:
         if not session.test_mode:
@@ -60,8 +84,11 @@ def output_file_name(session, item, branch, ext):
     #return "{}/{}.{}.{}".format(session.working_dir, item.output_root, branch, ext)
     return "{}/{}.{}.{}".format('.', item.output_root, branch, ext)
 
-def log_file_name(session, item, branch, program, dev):
-    return "{}/{}.{}.{}".format(item.logdir, program, branch, dev)
+def log_file_name(session, item, branch, program, dev, xnbin=False):
+    if not xnbin:
+        return "{}/{}.{}.{}".format(item.logdir, program, branch, dev)
+    else:
+        return "{}/{}.{}.{}xNBin.{}".format(item.logdir, program, branch, session.xnbinfac, dev)
 
 def print_exec_time(branch, program, exectime):
     print("[TIME] Execution time for {}/{} = {} s".format(branch, program, exectime))
@@ -91,7 +118,9 @@ def run_filterbank(session, item, branch):
         filterbank_in_file = './' + os.path.basename(item.rawdatafile)
     
     fil_file = output_file_name(session, item, branch, 'fil')
-    cmd = "filterbank {} -mjd {} -rf {} -nch {} -bw {} -ts {} -df {} > {}".format(filterbank_in_file, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband_code, fil_file)
+    #cmd = "filterbank {} -mjd {} -rf {} -nch {} -bw {} -ts {} -df {} > {}".format(filterbank_in_file, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband_code, fil_file)
+    sideband_opt = "-u" if item.sideband=='USB' else ''
+    cmd = "ugmrt2fil -i {} -o {} -j {} -d {} -f {} -c {} -w {} -t {} {}".format(filterbank_in_file, fil_file, item.jname, item.timestamp, item.freq, item.nchan, item.chanwidth, item.tsmpl, sideband_opt)
     
     print("[CMD]", cmd)
     
@@ -102,13 +131,33 @@ def run_filterbank(session, item, branch):
         
         print_exec_time(branch, program, stop_time-start_time)
 
-def run_dspsr(session, item, branch):
+def run_dspsr(session, item, branch, xnbin=False):
     program = 'dspsr'
-    exec_cmd(session, item, branch, program)
-        
-def run_pdmp(session, item, branch):
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
+    
+    # Checking if output file is created
+    if not xnbin:
+        fits_file = "./" + output_file_name(session, item, branch, 'fits')
+    else:
+        fits_file = "./" + output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
+    
+    if not os.access(fits_file, os.F_OK) and not session.test_mode:
+        print("[ERROR] dspsr failed to create file {} ... Quitting...".format(fits_file))
+        raise OSError
+
+
+def run_psredit(session, item, branch, xnbin=False):
+    program = 'psredit'
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
+
+
+def run_pdmp(session, item, branch, xnbin=False):
     program = 'pdmp'
-    exec_cmd(session, item, branch, program)
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
+    
+def run_ps2pdf(session, item, branch, xnbin=False):
+    program = 'ps2pdf'
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
 
 def run_rficlean(session, item, branch):
     #print("[INFO] Trying to make the rficlean-gmhdr file ...")
@@ -124,8 +173,19 @@ def norfix_branch(session, item):
     branch = 'norfix'
     run_filterbank(session, item, branch)
     run_dspsr(session, item, branch)
-    remove_tmp_file(session, item, branch, 'fil')
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
+    run_ps2pdf(session, item, branch)
+    remove_tmp_file(session, item, branch, 'summary.ps')
+    
+    if session.fold_extra_nbin:
+        run_dspsr(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch, xnbin=True)
+        run_pdmp(session, item, branch, xnbin=True)
+        run_ps2pdf(session, item, branch, xnbin=True)
+        remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
+    
+    remove_tmp_file(session, item, branch, 'fil')    
 
 def gptool_branch(session, item):
     branch = 'gptool'
@@ -133,15 +193,37 @@ def gptool_branch(session, item):
     run_filterbank(session, item, branch)
     remove_tmp_file(session, item, branch, 'gpt.dat')
     run_dspsr(session, item, branch)
-    remove_tmp_file(session, item, branch, 'fil')
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
+    run_ps2pdf(session, item, branch)
+    remove_tmp_file(session, item, branch, 'summary.ps')
+    
+    if session.fold_extra_nbin:
+        run_dspsr(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch, xnbin=True)
+        run_pdmp(session, item, branch, xnbin=True)
+        run_ps2pdf(session, item, branch, xnbin=True)
+        remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
+    
+    remove_tmp_file(session, item, branch, 'fil')
 
 def rficlean_branch(session, item):
     branch = 'rfiClean'
     run_rficlean(session, item, branch)
     run_dspsr(session, item, branch)
-    remove_tmp_file(session, item, branch, 'fil')
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
+    run_ps2pdf(session, item, branch)
+    remove_tmp_file(session, item, branch, 'summary.ps')
+    
+    if session.fold_extra_nbin:
+        run_dspsr(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch, xnbin=True)
+        run_pdmp(session, item, branch, xnbin=True)
+        run_ps2pdf(session, item, branch, xnbin=True)
+        remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
+    
+    remove_tmp_file(session, item, branch, 'fil')
 
 def setup_input_ln(session, item):
     if not session.samedir:

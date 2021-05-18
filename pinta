@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6
+#!/usr/bin/python3
 
 """ Generate and execute commands to reduce the raw uGMRT data into TIMER format.
 
@@ -37,8 +37,11 @@ for idx, item in enumerate(session.pipeline_items):
     if session.run_rficlean:
         #rfic_hdrfilename = "{}/{}-{}-ttemp-gm.info".format(session.working_dir, item.jname, item.idx)
         utils.make_rficlean_hdrfile(item.rfic_hdrfilename, item.jname, item.freq, item.nchan, item.chanwidth, item.tsmpl, item.sideband)
-        os.system('ls -l *.info')
         pexec.rficlean_branch(session, item)
+
+    print("[CMD] Creating summary file pinta_summary.txt")
+    if not session.test_mode:
+        os.system("fmt_pdmp_out.sh")
 
     if session.retain_aux:
         utils.move_aux_files(session, item)

@@ -11,7 +11,7 @@ import socket
 import pintatests as tests
 import pintautils as utils
 
-helpmsg = "Usage:\npinta.py [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
+helpmsg = "Usage:\npinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
 
 class Session:
     """  
@@ -22,7 +22,7 @@ class Session:
         
         #= Parsing command line ========================================================================================
         cmdargs = sys.argv[1:]
-        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file"])
+        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file", "xnbin="])
         opts = dict(opts)
         
         #= Displaying help =============================================================================================
@@ -98,6 +98,7 @@ class Session:
                 print("[CONFIG] gptool.in directory provided in command line.")
                 self.gptool_in_dir = tests.test_read_dir( os.path.realpath( opts.get("--gptdir") ) )
             else:
+                print("[CONFIG]" + "\033[91m" + " gptool.in directory NOT provided. The default may not be optimal for this dataset." + "\033[0m")
                 self.gptool_in_dir = tests.test_read_dir( os.path.realpath( config['pinta']['gptdir'] ) )
         
         if self.run_rficlean:
@@ -118,7 +119,7 @@ class Session:
         
         #= Checking if all required programs are present ===============================================================
         #program_list = ['gptool','dspsr','filterbank','tempo2','pdmp','crp_rficlean_gm.sh']
-        program_list = ['dspsr','filterbank','tempo2','pdmp']
+        program_list = ['dspsr','ugmrt2fil','tempo2','pdmp']
         if self.run_gptool:
             program_list += ['gptool']
         if self.run_rficlean:
@@ -131,6 +132,15 @@ class Session:
         if self.run_gptool:
             for freq in [499,749,1459]:
                 tests.test_input_file("{}/gptool.in.{}".format(self.gptool_in_dir,freq))
+                
+        #= Checking whether to apply extra binning =====================================================================
+        self.fold_extra_nbin = opts.get("--xnbin") is not None 
+        if self.fold_extra_nbin:
+            self.xnbinfac = int(opts.get("--xnbin"))
+            print("[CONFIG] Will fold the data to {}*NBin bins in addition to the NBin given in pipeline.in file.".format(self.xnbinfac))
+        else:
+            pass
+            #print("[CONFIG] Will not fold the data to Nyquist nbin.")
         
         #= Checking and reading pipeline.in ============================================================================
         self.pipeline_in_file = tests.test_input_file("%s/pipeline.in"%(self.working_dir))
@@ -181,7 +191,7 @@ class Session:
         self.lockfile = "{}/{}".format(self.working_dir, 'pinta.lock')
         if os.access(self.lockfile, os.F_OK):
             print("[ERROR] Another instance of pinta seems to be running on this directory.")
-            print("[ERROR] *IMPORTANT* If you are /sure/ this is a mistake, please remove pinta.lock manualy and try again. DOING THIS MAY CORRUPT THE DATA.")
+            print("[ERROR] *IMPORTANT* If you are /sure/ this is a mistake, please remove pinta.lock manually and try again. DOING THIS MAY CORRUPT THE DATA.")
             self.lockfail = True
             raise OSError()
         else:
@@ -266,6 +276,11 @@ class PipelineItem:
         self.f0psr = utils.fetch_f0(self.parfile)
         if self.f0psr <= 0:
             raise OSError("Could not read pulsar frequency from par file {}.".format(self.parfile))
+            
+        # Default binning
+        if self.nbin == -1:
+            self.nbin = utils.find_nyquist_nbin(session, self)
+        
     
     def desc(self):
         return '{}, MJD {}, {} MHz, {}'.format(self.jname, int(self.timestamp), self.intfreq, "CDP" if self.cohded else "PA")

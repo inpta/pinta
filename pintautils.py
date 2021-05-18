@@ -124,7 +124,19 @@ def check_mkdir(dirname):
         print("[INFO] Creating directory", dirname)
         os.mkdir(dirname)
     
-aux_files_wcards = ["*.info", "*.gpt", "pdmp.*", 'gptool.in*']
+aux_files_wcards = [    "bandshape.gpt", 
+                        "benchmark_fillTime.gpt", 
+                        "benchmark.gpt", 
+                        "benchmark_readtime.gpt", 
+                        "benchmark_threadtime.gpt", 
+                        "benchmark_threadtime_indv.gpt",
+                        "log.gpt",
+                        "stats.gpt",
+                        "gptool.in",
+                        "gptool.in.oldver",
+                        "pdmp.per",
+                        "pdmp.posn",
+                        "*-ttemp-gm.info" ]
 
 def move_aux_files(session, item):
     glb = lambda f : glob.glob("{}/{}".format(session.working_dir, f))
@@ -146,3 +158,9 @@ def print_log(session, message):
     if session.log_to_file:
         session.logfile.write(message+"\n")
 
+def find_nyquist_nbin(session, item):
+    F0 = item.f0psr
+    Tsmpl = item.tsmpl
+    nbin_nyq = 2**( int(np.log2( 1/(Tsmpl*F0) )) )
+    print ("[INFO] Default NBin =  %d"%nbin_nyq)
+    return nbin_nyq
