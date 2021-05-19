@@ -25,7 +25,7 @@ def create_gptin_file_from_session(session, item, filename="gptool.in"):
     gptin_templ_filename = "{}/gptool.in.templ".format(session.gptool_in_dir)
     
     gptin_opts = dict(  BM      = "PA",
-                        pol     = 1,
+                        pol     = 0,
                         Nbytes  = 2,
                         Fmin    = lowest_freq(item),
                         BW      = item.bandwidth,
