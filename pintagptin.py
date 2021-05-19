@@ -22,7 +22,7 @@ def create_gptin_file(template_file, gptin_opts, filename):
         
 def create_gptin_file_from_session(session, item, filename="gptool.in"):
 
-    gptin_templ_filename = "{}/gptool.in.templ".format(session.gptdir)
+    gptin_templ_filename = "{}/gptool.in.templ".format(session.gptool_in_dir)
     
     gptin_opts = dict(  BM      = "PA",
                         pol     = 1,
