@@ -10,6 +10,9 @@ import os
 import numpy as np
 import datetime
 import multiprocessing
+import multiexit
+
+multiexit.install()
 
 """
     Option to write the pipeline logs to a file. 
@@ -51,8 +54,22 @@ for idx, item in enumerate(session.pipeline_items):
     proc1.start()
     proc2.start()
     
+    @multiexit.register
+    def clean_child_processes():
+        """ Terminate the child processes if pinta is terminated prematurely. """
+        
+        print("Terminating child process #", proc1.pid())
+        proc1.terminate()
+        proc1.join()
+        
+        print("Terminating child process #", proc2.pid())
+        proc2.terminate()
+        proc2.join()
+    
     proc1.join()
     proc2.join()
+    
+    multiexit.unregister(clean_child_processes)
 
     print("[CMD] Creating summary file pinta_summary.txt")
     if not session.test_mode:
