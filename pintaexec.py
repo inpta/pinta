@@ -2,6 +2,7 @@ import subprocess
 import os
 import time
 import pintautils as utils
+import pintatests as tests
 import sys
 
 def exec_cmd(session, item, branch, program, xnbin=False):
@@ -102,7 +103,7 @@ def remove_tmp_file(session, item, branch, ext):
 def run_gptool(session, item, branch):
     program = 'gptool'
     
-    test_input_file("./gptool.in")
+    tests.test_input_file("./gptool.in")
     
     exec_cmd(session, item, branch, program)
     
