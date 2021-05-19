@@ -132,8 +132,11 @@ class Session:
         
         #= Checking gptool.in files for permissions ====================================================================
         if self.run_gptool:
-            for freq in [499,749,1459]:
-                tests.test_input_file("{}/gptool.in.{}".format(self.gptool_in_dir,freq))
+            if not self.auto_gptin:
+                for freq in [499,749,1459]:
+                    tests.test_input_file("{}/gptool.in.{}".format(self.gptool_in_dir,freq))
+            else:
+                tests.test_input_file("{}/gptool.in.templ".format(self.gptool_in_dir,freq))
                 
         #= Checking whether to apply extra binning =====================================================================
         self.fold_extra_nbin = opts.get("--xnbin") is not None 

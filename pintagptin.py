@@ -21,6 +21,7 @@ def create_gptin_file(template_file, gptin_opts, filename):
             fout.write(gptin_str)
         
 def create_gptin_file_from_session(session, item, filename="gptool.in"):
+
     gptin_templ_filename = "{}/gptool.in.templ".format(session.gptdir)
     
     gptin_opts = dict(  BM      = "PA",
@@ -39,4 +40,6 @@ def create_gptin_file_from_session(session, item, filename="gptool.in"):
     output_filename = "{}/{}".format(session.working_dir, filename)
     
     create_gptin_file(gptin_templ_filename, gptin_opts, output_filename)
+    
+    print("[INFO] Generated gptool.in file from template {}".format(gptin_templ_filename))
     
