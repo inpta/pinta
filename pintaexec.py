@@ -101,6 +101,9 @@ def remove_tmp_file(session, item, branch, ext):
     
 def run_gptool(session, item, branch):
     program = 'gptool'
+    
+    test_input_file("./gptool.in")
+    
     exec_cmd(session, item, branch, program)
     
     if not session.test_mode:
