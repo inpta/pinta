@@ -4,7 +4,6 @@ import time
 import pintautils as utils
 import pintatests as tests
 import sys
-import multiexit
 
 def exec_cmd(session, item, branch, program, xnbin=False):
 
@@ -71,18 +70,8 @@ def exec_cmd(session, item, branch, program, xnbin=False):
             
             of = open(outfile, 'w')
             ef = open(errfile, 'w')
-            
             p = subprocess.Popen(cmd, stdout=of, stderr=ef, shell=True)
-            
-            @multiexit.register
-            def clean_child_processes():
-                print("Terminating child process #", p.pid())
-                p.terminate()
-            
             p.wait()
-            
-            multiexit.unregister(clean_child_processes)
-            
             of.close()
             ef.close()
         
