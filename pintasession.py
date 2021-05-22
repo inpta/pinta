@@ -22,7 +22,7 @@ class Session:
         
         #= Parsing command line ========================================================================================
         cmdargs = sys.argv[1:]
-        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "auto-gptin", "nodel", "retain-aux", "log-to-file", "xnbin="])
+        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "auto-gptin", "nodel", "retain-aux", "log-to-file", "xnbin=", "newfmt"])
         opts = dict(opts)
         
         #= Displaying help =============================================================================================
@@ -119,6 +119,13 @@ class Session:
         else:
             print("[CONFIG] Will not remove intermediate products.")
         
+        #= Whether to enable new format for pipeline.in ================================================================
+        self.newfmt = opts.get("--newfmt") is not None
+        if self.newfmt:
+            print("[CONFIG] Will enable new format for pipeline.in.")
+        else:
+            print("[CONFIG] Will retain old format for pipeline.in.")
+        
         #= Checking if all required programs are present ===============================================================
         #program_list = ['gptool','dspsr','filterbank','tempo2','pdmp','crp_rficlean_gm.sh']
         program_list = ['dspsr','ugmrt2fil','tempo2','pdmp']
@@ -156,7 +163,11 @@ class Session:
             if len(self.pipeline_in_data.shape)==1:
                 self.pipeline_in_data = np.asarray([self.pipeline_in_data])
             
-            no_of_cols_expected = 12
+            if not self.newfmt:
+                no_of_cols_expected = 12
+            else:
+                no_of_cols_expected = 13
+                
             if self.pipeline_in_data.shape[1] != no_of_cols_expected:
                 raise ValueError()
             print("Done. %d item(s) to be processed."%(len(self.pipeline_in_data)))
@@ -255,12 +266,19 @@ class PipelineItem:
         self.sideband_code = utils.process_sideband(self.sideband)
         
         self.npol = int(pipeline_in_row[9])
-        if self.npol not in [1,2,4]:
+        if self.npol not in [1,4]:
             raise ValueError("The given npol = {} is invalid.".format(self.npol))
         
         self.tsubint = float(pipeline_in_row[10])
 
         self.cohded = bool(int(pipeline_in_row[11]))
+        
+        if not session.newfmt:
+            self.nbit = 16
+        else:
+            self.nbit = int(pipeline_in_row[12])
+        if self.nbit not in [8,16]:
+            raise ValueError("The given nbit = {} is invalid.".format(self.nbit))
         
         self.freq = utils.process_freq(self.freq_lo, self.nchan, self.bandwidth, self.sideband, self.cohded)
 
