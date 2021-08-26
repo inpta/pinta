@@ -277,7 +277,7 @@ class PipelineItem:
         if self.f0psr <= 0:
             raise OSError("Could not read pulsar frequency from par file {}.".format(self.parfile))
         
-        self.coordstr = utils.fetch_RAJ_DECJ(self.parfile)
+        self.coordstr = ''.join(utils.fetch_RAJ_DECJ(self.parfile))
         
         # Default binning
         if self.nbin == -1:
