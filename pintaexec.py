@@ -31,10 +31,10 @@ def exec_cmd(session, item, branch, program, xnbin=False):
     elif program == 'psredit':
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
-            cmd = "psredit -c name={},be:name=GWB -m {}".format(item.jname,fits_file)
+            cmd = "psredit -c name={},be:name=GWB,coord={} -m {}".format(item.jname, item.coordstr, fits_file)
         else:
             fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
-            cmd = "psredit -c name={},be:name=GWB -m {}".format(item.jname,fits_file)
+            cmd = "psredit -c name={},be:name=GWB,coord={} -m {}".format(item.jname, item.coordstr, fits_file)
     elif program == 'pdmp':
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')

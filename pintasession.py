@@ -276,7 +276,9 @@ class PipelineItem:
         self.f0psr = utils.fetch_f0(self.parfile)
         if self.f0psr <= 0:
             raise OSError("Could not read pulsar frequency from par file {}.".format(self.parfile))
-            
+        
+        self.coordstr = ''.join(utils.fetch_RAJ_DECJ(self.parfile))
+        
         # Default binning
         if self.nbin == -1:
             self.nbin = utils.find_nyquist_nbin(session, self)

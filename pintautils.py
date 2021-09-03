@@ -7,6 +7,7 @@ import astropy.time as astrotime
 import getopt
 import time
 import glob
+import astropy.units as astrounit
 
 def touch_file(fname):
     with open(fname, 'w'):
@@ -52,6 +53,82 @@ def fetch_f0(parfile_name):
                     pass #print ("F0 is not in this line. ")
     print ("[INPUT] Pulsar spin-frequency found :  %f "%f0)
     return f0
+
+def prepare_par_line(line):
+    return line.strip().replace('\t',' ').replace('\n','')
+
+def rad_to_hms(α):
+    # α will be in [-pi,pi]
+    if α<0:
+        α += 2*np.pi
+    hrs = α * 12 / np.pi
+    
+    hh = int(hrs)
+    mm = int((hrs - hh)*60)
+    ss = int((hrs - hh - mm/60)*3600)
+    sf = (hrs - hh - mm/60)*3600 - ss
+    sfs = str(sf).split('.')[1]
+    
+    return f'{hh:02}:{mm:02}:{ss:02}.{sfs}'    
+
+def rad_to_dms(δ):
+    # δ will be in [-pi/2, pi/2]
+    sgn = np.sign(δ)
+    pm = '-' if sgn<0 else '+'
+    
+    degs = np.abs(δ) * 180 / np.pi
+    
+    dd = int(degs)
+    mm = int((degs - dd)*60)
+    ss = int((degs - dd - mm/60)*3600)
+    sf = (degs - dd - mm/60)*3600 - ss
+    sfs = str(sf).split('.')[1]
+    
+    return f'{pm}{dd:02}:{mm:02}:{ss:02}.{sfs}'
+
+def ecliptic_to_equatorial(elat, elong):
+    """
+    https://en.wikipedia.org/wiki/Astronomical_coordinate_systems#Equatorial_%E2%86%94_ecliptic
+    """
+    
+    # Obliquity value taken from PINT
+    # https://github.com/nanograv/PINT/blob/master/src/pint/data/runtime/ecliptic.dat
+    ε = astrounit.Quantity(84381.406000, astrounit.arcsec).to(astrounit.rad).value
+    
+    β = astrounit.Quantity(elat,  astrounit.deg).to(astrounit.rad).value 
+    λ = astrounit.Quantity(elong, astrounit.deg).to(astrounit.rad).value 
+    
+    α = np.arctan2(np.cos(β)*np.sin(λ)*np.cos(ε) - np.sin(β)*np.sin(ε),
+                   np.cos(β)*np.cos(λ))
+    δ = np.arcsin(np.sin(β)*np.cos(ε) + np.cos(β)*np.sin(λ)*np.sin(ε))
+    
+    return rad_to_hms(α), rad_to_dms(δ)
+
+def fetch_RAJ_DECJ(parfile_name):
+    with open(parfile_name, 'r') as par_file:
+        par_lines = par_file.readlines()
+        
+        par_tokens = dict([list(filter(lambda x: len(x)>0, 
+                                       prepare_par_line(line).split(' ')
+                                      )
+                               )[:2] for line in par_lines
+                          ])
+        
+        if "RAJ" in par_tokens and "DECJ" in par_tokens:
+            raj = par_tokens["RAJ"]
+            decj = par_tokens["DECJ"]
+            return raj, decj
+        elif "ELAT" in par_tokens and "ELONG" in par_tokens:
+            elat = par_tokens["ELAT"]
+            elong = par_tokens["ELONG"]
+            return ecliptic_to_equatorial(elat, elong)
+        elif "LAMBDA" in par_tokens and "BETA" in par_tokens:
+            elat = par_tokens["BETA"]
+            elong = par_tokens["LAMBDA"]
+            return ecliptic_to_equatorial(elat, elong)
+        else:
+            print("[ERROR] Unable to read coordinates from par file. Setting 00:00:00+00:00:00.")
+            return "00:00:00","+00:00:00"
 
 def make_rficlean_hdrfile(file_name, psrj,frequency,nchannels,bandwidth,samplingtime,whichband):
         
