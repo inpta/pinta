@@ -35,6 +35,13 @@ def exec_cmd(session, item, branch, program, xnbin=False):
         else:
             fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
             cmd = "psredit -c name={},be:name=GWB,coord={} -m {}".format(item.jname, item.coordstr, fits_file)
+    elif program == 'pam':
+        if not xnbin:
+            fits_file = output_file_name(session, item, branch, 'fits')
+            cmd = "pam -a PSRFITS -m {}".format(fits_file)
+        else:
+            fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
+            cmd = "pam -a PSRFITS -m {}".format(fits_file)
     elif program == 'pdmp':
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
@@ -150,6 +157,9 @@ def run_psredit(session, item, branch, xnbin=False):
     program = 'psredit'
     exec_cmd(session, item, branch, program, xnbin=xnbin)
 
+def run_pam(session, item, branch, xnbin=False):
+    program = 'pam'
+    exec_cmd(session, item, branch, program, xnbin=xnbin)
 
 def run_pdmp(session, item, branch, xnbin=False):
     program = 'pdmp'
@@ -174,6 +184,7 @@ def norfix_branch(session, item):
     run_filterbank(session, item, branch)
     run_dspsr(session, item, branch)
     run_psredit(session, item, branch)
+    run_pam(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
@@ -181,6 +192,7 @@ def norfix_branch(session, item):
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
         run_psredit(session, item, branch, xnbin=True)
+        run_pam(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
@@ -194,6 +206,7 @@ def gptool_branch(session, item):
     remove_tmp_file(session, item, branch, 'gpt.dat')
     run_dspsr(session, item, branch)
     run_psredit(session, item, branch)
+    run_pam(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
@@ -201,6 +214,7 @@ def gptool_branch(session, item):
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
         run_psredit(session, item, branch, xnbin=True)
+        run_pam(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
@@ -212,6 +226,7 @@ def rficlean_branch(session, item):
     run_rficlean(session, item, branch)
     run_dspsr(session, item, branch)
     run_psredit(session, item, branch)
+    run_pam(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
@@ -219,6 +234,7 @@ def rficlean_branch(session, item):
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
         run_psredit(session, item, branch, xnbin=True)
+        run_pam(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
