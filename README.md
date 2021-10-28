@@ -7,6 +7,9 @@ If you use this pipeline in your research, please cite this paper,
 along with those for the two RFI excision tools that `pinta` heavily
 make use of (`RFIClean`: https://doi.org/10.1051/0004-6361/202040164, `gptool`:to be updated).
 
+`pinta` is now available at GMRT as an observatory pipeline.
+See this [http://www.ncra.tifr.res.in/~bcj/PintaV6.pdf](user guide) for instructions on how to access `pinta` at GMRT.
+
 ## Installing
 
 ### Installing Dependencies
