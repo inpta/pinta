@@ -109,10 +109,12 @@ def fetch_RAJ_DECJ(parfile_name):
         par_lines = par_file.readlines()
         
         par_tokens = dict([list(filter(lambda x: len(x)>0, 
-                                       prepare_par_line(line).split(' ')
-                                      )
-                               )[:2] for line in par_lines
-                          ])
+                                       prepare_par_line(line).split(' '))
+                               )[:2] 
+                           for line in par_lines 
+                           if len(prepare_par_line(line))>0 
+                          ]   
+                      )
         
         if "RAJ" in par_tokens and "DECJ" in par_tokens:
             raj = par_tokens["RAJ"]
