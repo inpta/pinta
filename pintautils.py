@@ -261,6 +261,19 @@ def find_rcvr_name(session, item):
     return "uGMRT_B{}".format(band_num)
 
 def find_gwb_mode(session, item):
-    return "CD" if item.cohded else "IA/PA"
+    return "CD" if item.cohded else "PA"
+    
+def generate_config_str(session, item):
+    flo = int(item.freq_lo)
+    bw  = int(item.bandwidth)
+    nchn= item.nchan
+    sb  = item.sideband
+    tsmp= item.tsmpl*1e6
+    cd  = int(item.cohded),
+    
+    config_str = "{}|{}|{}|{}|{}|{}".format(flo, bw, nchn, sb, tsmp, cd)
+    
+    return config_str
+    
 
 

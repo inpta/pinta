@@ -275,7 +275,7 @@ class PipelineItem:
         
         self.band_num = utils.find_band_number(session, self)
         
-        self.gwb_mode = utils.find_gwb_mode(session, self)
+        self.gwb_config = utils.generate_config_str(session, self)
         
         self.gwb_delay = session.gwb_delays.get_delay(self)
 
