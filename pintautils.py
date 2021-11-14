@@ -269,7 +269,7 @@ def generate_config_str(session, item):
     nchn= item.nchan
     sb  = item.sideband
     tsmp= item.tsmpl*1e6
-    cd  = int(item.cohded),
+    cd  = int(item.cohded)
     
     config_str = "{}|{}|{}|{}|{}|{}".format(flo, bw, nchn, sb, tsmp, cd)
     

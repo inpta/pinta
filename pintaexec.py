@@ -46,7 +46,7 @@ def exec_cmd(session, item, branch, program, xnbin=False):
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
             summary_file = output_file_name(session, item, branch, 'summary.ps')
-            cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
+            cmd = "pdmp -mc 64 -ms 16 -g {}/cps {}".format(summary_file, fits_file)
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
             fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
