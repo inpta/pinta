@@ -241,3 +241,26 @@ def find_nyquist_nbin(session, item):
     nbin_nyq = 2**( int(np.log2( 1/(Tsmpl*F0) )) )
     print ("[INFO] Default NBin =  %d"%nbin_nyq)
     return nbin_nyq
+
+def find_band_number(session, item):
+    freq_lo = item.freq_lo
+    
+    if freq_lo>119 and freq_lo<=250:
+        return 2
+    elif freq_lo>250 and freq_lo<501:
+        return 3
+    elif freq_lo>549 and freq_lo<851:
+        return 4
+    elif freq_lo>1059 and freq_lo<1461:
+        return 5
+    else:
+        raise ValueError("The value of freq_lo is outside valid ranges for uGMRT bands.")
+
+def find_rcvr_name(session, item):
+    band_num = find_band_number(session, item)
+    return "uGMRT_B{}".format(band_num)
+
+def find_gwb_mode(session, item):
+    return "CD" if item.cohded else "IA/PA"
+
+
