@@ -109,10 +109,12 @@ def fetch_RAJ_DECJ(parfile_name):
         par_lines = par_file.readlines()
         
         par_tokens = dict([list(filter(lambda x: len(x)>0, 
-                                       prepare_par_line(line).split(' ')
-                                      )
-                               )[:2] for line in par_lines
-                          ])
+                                       prepare_par_line(line).split(' '))
+                               )[:2] 
+                           for line in par_lines 
+                           if len(prepare_par_line(line))>0 
+                          ]   
+                      )
         
         if "RAJ" in par_tokens and "DECJ" in par_tokens:
             raj = par_tokens["RAJ"]
@@ -241,3 +243,39 @@ def find_nyquist_nbin(session, item):
     nbin_nyq = 2**( int(np.log2( 1/(Tsmpl*F0) )) )
     print ("[INFO] Default NBin =  %d"%nbin_nyq)
     return nbin_nyq
+
+def find_band_number(session, item):
+    freq_lo = item.freq_lo
+    
+    if freq_lo>119 and freq_lo<=250:
+        return 2
+    elif freq_lo>250 and freq_lo<501:
+        return 3
+    elif freq_lo>549 and freq_lo<851:
+        return 4
+    elif freq_lo>1059 and freq_lo<1461:
+        return 5
+    else:
+        raise ValueError("The value of freq_lo is outside valid ranges for uGMRT bands.")
+
+def find_rcvr_name(session, item):
+    band_num = find_band_number(session, item)
+    return "uGMRT_B{}".format(band_num)
+
+def find_gwb_mode(session, item):
+    return "CD" if item.cohded else "PA"
+    
+def generate_config_str(session, item):
+    flo = int(item.freq_lo)
+    bw  = int(item.bandwidth)
+    nchn= item.nchan
+    sb  = item.sideband
+    tsmp= item.tsmpl*1e6
+    cd  = int(item.cohded)
+    
+    config_str = "{}|{}|{}|{}|{}|{}".format(flo, bw, nchn, sb, tsmp, cd)
+    
+    return config_str
+    
+
+

@@ -31,10 +31,10 @@ def exec_cmd(session, item, branch, program, xnbin=False):
     elif program == 'psredit':
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
-            cmd = "psredit -c name={},be:name=GWB,coord={} -m {}".format(item.jname, item.coordstr, fits_file)
+            cmd = "psredit -c name={},be:name=GWB,coord={},rcvr:name={},be:config='{}',be:delay={} -m {}".format(item.jname, item.coordstr, item.rcvr_name, item.gwb_config, -item.gwb_delay, fits_file)
         else:
             fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
-            cmd = "psredit -c name={},be:name=GWB,coord={} -m {}".format(item.jname, item.coordstr, fits_file)
+            cmd = "psredit -c name={},be:name=GWB,coord={},rcvr:name={},be:config='{}',be:delay={} -m {}".format(item.jname, item.coordstr, item.rcvr_name, item.gwb_config, -item.gwb_delay, fits_file)
     elif program == 'pam':
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
@@ -46,7 +46,7 @@ def exec_cmd(session, item, branch, program, xnbin=False):
         if not xnbin:
             fits_file = output_file_name(session, item, branch, 'fits')
             summary_file = output_file_name(session, item, branch, 'summary.ps')
-            cmd = "pdmp -mc 64 -g {}/cps {}".format(summary_file, fits_file)
+            cmd = "pdmp -mc 64 -ms 16 -g {}/cps {}".format(summary_file, fits_file)
             #cmd_split = filter(lambda x: len(x)>0, cmd.split(' '))
         else:
             fits_file = output_file_name(session, item, branch, '{}xNBin.fits'.format(session.xnbinfac))
@@ -183,16 +183,16 @@ def norfix_branch(session, item):
     branch = 'norfix'
     run_filterbank(session, item, branch)
     run_dspsr(session, item, branch)
-    run_psredit(session, item, branch)
     run_pam(session, item, branch)
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
-        run_psredit(session, item, branch, xnbin=True)
         run_pam(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
@@ -205,16 +205,16 @@ def gptool_branch(session, item):
     run_filterbank(session, item, branch)
     remove_tmp_file(session, item, branch, 'gpt.dat')
     run_dspsr(session, item, branch)
-    run_psredit(session, item, branch)
     run_pam(session, item, branch)
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
-        run_psredit(session, item, branch, xnbin=True)
         run_pam(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))
@@ -225,16 +225,16 @@ def rficlean_branch(session, item):
     branch = 'rfiClean'
     run_rficlean(session, item, branch)
     run_dspsr(session, item, branch)
-    run_psredit(session, item, branch)
     run_pam(session, item, branch)
+    run_psredit(session, item, branch)
     run_pdmp(session, item, branch)
     run_ps2pdf(session, item, branch)
     remove_tmp_file(session, item, branch, 'summary.ps')
     
     if session.fold_extra_nbin:
         run_dspsr(session, item, branch, xnbin=True)
-        run_psredit(session, item, branch, xnbin=True)
         run_pam(session, item, branch, xnbin=True)
+        run_psredit(session, item, branch, xnbin=True)
         run_pdmp(session, item, branch, xnbin=True)
         run_ps2pdf(session, item, branch, xnbin=True)
         remove_tmp_file(session, item, branch, '{}xNBin.summary.ps'.format(session.xnbinfac))

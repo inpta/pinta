@@ -10,6 +10,7 @@ import socket
 
 import pintatests as tests
 import pintautils as utils
+from gwb_delays import GWBDelays
 
 helpmsg = "Usage:\npinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
 
@@ -70,7 +71,16 @@ class Session:
             print("[CONFIG] Reading config from", self.config_file)
             config = yaml.load(open(self.config_file), Loader=yaml.FullLoader)
         except:
-            print("[ERROR] Unable to read config file ", config_file)
+            print("[ERROR] Unable to read config file ", self.config_file)
+            sys.exit(0)
+        
+        #= Reading gwb_delays.dat ======================================================================================
+        self.gwb_delays_file = '{}/{}'.format(self.script_dir, 'gwb_delays.dat')
+        try:
+            print("[CONFIG] Reading GWB delays from", self.gwb_delays_file)
+            self.gwb_delays = GWBDelays(self.gwb_delays_file)
+        except:
+            print("[ERROR] Unable to read file ", self.gwb_delays_file)
             sys.exit(0)
         
         #= Which branches to run =======================================================================================
@@ -260,6 +270,14 @@ class PipelineItem:
         self.freq = utils.process_freq(self.freq_lo, self.nchan, self.bandwidth, self.sideband, self.cohded)
 
         self.idx = idx
+        
+        self.rcvr_name = utils.find_rcvr_name(session, self)
+        
+        self.band_num = utils.find_band_number(session, self)
+        
+        self.gwb_config = utils.generate_config_str(session, self)
+        
+        self.gwb_delay = session.gwb_delays.get_delay(self)
 
         self.output_root = "{:s}_{:0.6f}_{:d}".format(self.jname, float(self.timestamp), int(self.freq_lo))
 
