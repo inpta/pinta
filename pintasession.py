@@ -23,7 +23,7 @@ class Session:
         
         #= Parsing command line ========================================================================================
         cmdargs = sys.argv[1:]
-        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file", "xnbin="])
+        opts, args = getopt.gnu_getopt(cmdargs, "", ["gptdir=", "pardir=", "rficconf=", "help", "test", "no-gptool", "no-rficlean", "nodel", "retain-aux", "log-to-file", "xnbin=", "rficlean_nosafe"])
         opts = dict(opts)
         
         #= Displaying help =============================================================================================
@@ -152,6 +152,11 @@ class Session:
             pass
             #print("[CONFIG] Will not fold the data to Nyquist nbin.")
         
+        #= Run RFIClean without pulsar frequency safeguard =============================================================
+        self.rficlean_nosafe = opts.get("--rficlean_nosafe") is not None 
+        if self.rficlean_nosafe and self.run_rficlean:
+            print("[CONFIG] Will run RFIClean without pulsar frequency safeguard.")
+
         #= Checking and reading pipeline.in ============================================================================
         self.pipeline_in_file = tests.test_input_file("%s/pipeline.in"%(self.working_dir))
         

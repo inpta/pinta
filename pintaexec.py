@@ -58,8 +58,11 @@ def exec_cmd(session, item, branch, program, xnbin=False):
         Nprocess = 16
         ##cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfbins 32 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, item.f0psr, os.path.basename(item.timestampfile))
         ## now use absolute delta-freq. instead of Fourier-bins (whose width can change with tsamp,block-size)
-        cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfdf 8.0 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, item.f0psr, os.path.basename(item.timestampfile))
-        #cmd_split = ["crp_rficlean_gm.sh", fil_file, session.rfic_conf_file, str(Nprocess), item.rawdatafile, rfic_hdrfilename, rficlean_flags]
+        if not session.rficlean_nosafe:
+            cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-psrf {} -psrfdf 8.0 -gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, item.f0psr, os.path.basename(item.timestampfile))
+        else:
+            # Disable pulsar frequency safeguard.
+            cmd = 'crp_rficlean_gm.sh {} {} {} {} {} \"-gmtstamp {}\"'.format(fil_file, session.rfic_conf_file, Nprocess, os.path.basename(item.rawdatafile), item.rfic_hdrfilename, os.path.basename(item.timestampfile))
     elif program == 'ps2pdf':
         if not xnbin:
             summary_file = output_file_name(session, item, branch, 'summary.ps')
