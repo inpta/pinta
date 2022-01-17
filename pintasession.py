@@ -12,7 +12,7 @@ import pintatests as tests
 import pintautils as utils
 from gwb_delays import GWBDelays
 
-helpmsg = "Usage:\npinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] <input_dir> <working_dir>"
+helpmsg = "Usage:\npinta [--help] [--test] [--no-gptool] [--no-rficlean] [--nodel] [--retain-aux] [--log-to-file] [--gptdir <...>] [--pardir <...>] [--rficconf <...>] [--rficlean_nosafe] <input_dir> <working_dir>"
 
 class Session:
     """  
