@@ -20,7 +20,7 @@ Install the following pulsar packages by following the installation instructions
 - psrchive (http://psrchive.sourceforge.net/)
 - RFIClean (https://github.com/ymaan4/RFIClean)
 - gptool (https://github.com/chowdhuryaditya/gptool)
-- ugmrt2fil (https://github.com/abhisrkckl/ugmrt2fil)
+- ugmrt2fil (https://github.com/inpta/ugmrt2fil)
 
 Install the python dependencies.
 
@@ -39,7 +39,7 @@ For example, we will use the `pulsar` group name in this guide. The following co
 
 Say you want to install `pinta` in `/pinta/install/path/`. 
 
-    $ git clone https://github.com/abhisrkckl/pinta.git
+    $ git clone https://github.com/inpta/pinta.git
     $ cp pinta/pinta pinta/pinta*.py pinta/pinta.yaml /pinta/install/path/
     $ chgrp pulsar /pinta/inst/path/*
     $ chmod ug+r /pinta/inst/path/*
